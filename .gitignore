@@ -1,0 +1,4 @@
+build
+.tags*
+CMakeLists.txt.*
+*.pro.*

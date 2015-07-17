@@ -43,10 +43,11 @@ typedef int hs_monitor_callback_func(hs_monitor_event event, struct hs_device *d
 HS_PUBLIC int hs_monitor_new(hs_monitor **rmonitor);
 HS_PUBLIC void hs_monitor_free(hs_monitor *monitor);
 
+HS_PUBLIC hs_descriptor hs_monitor_get_descriptor(const hs_monitor *monitor);
+
 HS_PUBLIC int hs_monitor_register_callback(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);
 HS_PUBLIC void hs_monitor_deregister_callback(hs_monitor *monitor, int id);
 
-HS_PUBLIC hs_descriptor hs_monitor_get_descriptor(const hs_monitor *monitor);
 HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
 
 HS_PUBLIC int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);

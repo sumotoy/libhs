@@ -66,6 +66,12 @@ const char *hs_device_get_location(const hs_device *dev)
     return dev->location;
 }
 
+uint8_t hs_device_get_interface_number(const hs_device *dev)
+{
+    assert(dev);
+    return dev->iface;
+}
+
 const char *hs_device_get_path(const hs_device *dev)
 {
     assert(dev);
@@ -88,12 +94,6 @@ const char *hs_device_get_serial_number(const hs_device *dev)
 {
     assert(dev);
     return dev->serial;
-}
-
-uint8_t hs_device_get_interface_number(const hs_device *dev)
-{
-    assert(dev);
-    return dev->iface;
 }
 
 int hs_device_open(hs_device *dev, hs_handle **rh)

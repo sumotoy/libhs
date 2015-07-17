@@ -38,35 +38,6 @@ struct callback {
     void *udata;
 };
 
-int _hs_monitor_init(hs_monitor *monitor)
-{
-    int r;
-
-    _hs_list_init(&monitor->callbacks);
-
-    r = _hs_htable_init(&monitor->devices, 64);
-    if (r < 0)
-        return r;
-
-    return 0;
-}
-
-void _hs_monitor_release(hs_monitor *monitor)
-{
-    _hs_list_foreach(cur, &monitor->callbacks) {
-        struct callback *callback = _hs_container_of(cur, struct callback, list);
-        free(callback);
-    }
-
-    hs_htable_foreach(cur, &monitor->devices) {
-        hs_device *dev = _hs_container_of(cur, hs_device, hnode);
-
-        dev->monitor = NULL;
-        hs_device_unref(dev);
-    }
-    _hs_htable_release(&monitor->devices);
-}
-
 int hs_monitor_register_callback(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata)
 {
     assert(monitor);
@@ -103,6 +74,35 @@ void hs_monitor_deregister_callback(hs_monitor *monitor, int id)
             break;
         }
     }
+}
+
+int _hs_monitor_init(hs_monitor *monitor)
+{
+    int r;
+
+    _hs_list_init(&monitor->callbacks);
+
+    r = _hs_htable_init(&monitor->devices, 64);
+    if (r < 0)
+        return r;
+
+    return 0;
+}
+
+void _hs_monitor_release(hs_monitor *monitor)
+{
+    _hs_list_foreach(cur, &monitor->callbacks) {
+        struct callback *callback = _hs_container_of(cur, struct callback, list);
+        free(callback);
+    }
+
+    hs_htable_foreach(cur, &monitor->devices) {
+        hs_device *dev = _hs_container_of(cur, hs_device, hnode);
+
+        dev->monitor = NULL;
+        hs_device_unref(dev);
+    }
+    _hs_htable_release(&monitor->devices);
 }
 
 static int trigger_callbacks(hs_device *dev, hs_monitor_event event)

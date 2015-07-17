@@ -58,8 +58,8 @@ int hs_hid_parse_descriptor(hs_handle *h, hs_hid_descriptor *rdesc)
     if (ret != HIDP_STATUS_SUCCESS)
         return hs_error(HS_ERROR_INVALID, "Invalid HID descriptor");
 
-    rdesc->usage = caps.Usage;
     rdesc->usage_page = caps.UsagePage;
+    rdesc->usage = caps.Usage;
 
     return 0;
 }

@@ -32,8 +32,8 @@ HS_BEGIN_C
 struct hs_handle;
 
 typedef struct hs_hid_descriptor {
-    uint16_t usage;
     uint16_t usage_page;
+    uint16_t usage;
 } hs_hid_descriptor;
 
 HS_PUBLIC int hs_hid_parse_descriptor(struct hs_handle *h, hs_hid_descriptor *desc);

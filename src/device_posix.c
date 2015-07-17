@@ -76,7 +76,7 @@ restart:
     return 0;
 
 error:
-    hs_device_close(h);
+    hs_handle_close(h);
     return r;
 }
 

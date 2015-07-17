@@ -54,28 +54,6 @@ void hs_device_unref(hs_device *dev)
     free(dev);
 }
 
-int hs_device_open(hs_device *dev, hs_handle **rh)
-{
-    assert(dev);
-    assert(rh);
-
-    return (*dev->vtable->open)(dev, rh);
-}
-
-void hs_device_close(hs_handle *h)
-{
-    if (!h)
-        return;
-
-    (*h->dev->vtable->close)(h);
-}
-
-hs_descriptor hs_device_get_descriptor(const hs_handle *h)
-{
-    assert(h);
-    return (*h->dev->vtable->get_descriptor)(h);
-}
-
 hs_device_type hs_device_get_type(const hs_device *dev)
 {
     assert(dev);
@@ -116,4 +94,32 @@ uint8_t hs_device_get_interface_number(const hs_device *dev)
 {
     assert(dev);
     return dev->iface;
+}
+
+int hs_device_open(hs_device *dev, hs_handle **rh)
+{
+    assert(dev);
+    assert(rh);
+
+    return (*dev->vtable->open)(dev, rh);
+}
+
+void hs_handle_close(hs_handle *h)
+{
+    if (!h)
+        return;
+
+    (*h->dev->vtable->close)(h);
+}
+
+hs_device *hs_handle_get_device(const hs_handle *h)
+{
+    assert(h);
+    return h->dev;
+}
+
+hs_descriptor hs_handle_get_descriptor(const hs_handle *h)
+{
+    assert(h);
+    return (*h->dev->vtable->get_descriptor)(h);
 }

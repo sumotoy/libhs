@@ -320,7 +320,7 @@ static int open_hid_device(hs_device *dev, hs_handle **rh)
     return 0;
 
 error:
-    hs_device_close(h);
+    hs_handle_close(h);
     return r;
 }
 

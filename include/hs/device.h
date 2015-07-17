@@ -49,9 +49,11 @@ HS_PUBLIC const char *hs_device_get_serial_number(const hs_device *dev);
 HS_PUBLIC uint8_t hs_device_get_interface_number(const hs_device *dev);
 
 HS_PUBLIC int hs_device_open(hs_device *dev, hs_handle **rh);
-HS_PUBLIC void hs_device_close(hs_handle *h);
 
-HS_PUBLIC hs_descriptor hs_device_get_descriptor(const hs_handle *h);
+HS_PUBLIC void hs_handle_close(hs_handle *h);
+
+HS_PUBLIC hs_device *hs_handle_get_device(const hs_handle *h);
+HS_PUBLIC hs_descriptor hs_handle_get_descriptor(const hs_handle *h);
 
 HS_END_C
 

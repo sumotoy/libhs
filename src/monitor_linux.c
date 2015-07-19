@@ -257,7 +257,7 @@ int hs_monitor_new(hs_monitor **rmonitor)
         // Quick inspection of libudev reveals it fails with malloc only
         udev = udev_new();
         if (!udev)
-            return hs_error(HS_ERROR_MEMORY, NULL);
+            return hs_error(HS_ERROR_SYSTEM, "udev_new() failed");
 
         // valgrind compliance ;)
         atexit(free_udev);
@@ -271,29 +271,21 @@ int hs_monitor_new(hs_monitor **rmonitor)
 
     monitor->monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (!monitor->monitor) {
-        if (errno == ENOMEM) {
-            r = hs_error(HS_ERROR_MEMORY, NULL);
-        } else {
-            r = hs_error(HS_ERROR_SYSTEM, "udev_monitor_new_from_netlink() failed");
-        }
+        r = hs_error(HS_ERROR_SYSTEM, "udev_monitor_new_from_netlink() failed");
         goto error;
     }
 
     for (const char **cur = device_subsystems; *cur; cur++) {
         r = udev_monitor_filter_add_match_subsystem_devtype(monitor->monitor, *cur, NULL);
         if (r < 0) {
-            r = hs_error(HS_ERROR_MEMORY, NULL);
+            r = hs_error(HS_ERROR_SYSTEM, "udev_monitor_filter_add_match_subsystem_devtype() failed");
             goto error;
         }
     }
 
     r = udev_monitor_enable_receiving(monitor->monitor);
     if (r < 0) {
-        if (r == -ENOMEM) {
-            r = hs_error(HS_ERROR_MEMORY, NULL);
-        } else {
-            r = hs_error(HS_ERROR_SYSTEM, "udev_monitor_enable_receiving() failed");
-        }
+        r = hs_error(HS_ERROR_SYSTEM, "udev_monitor_enable_receiving() failed");
         goto error;
     }
 

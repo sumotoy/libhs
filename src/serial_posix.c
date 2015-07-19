@@ -254,11 +254,8 @@ restart:
 
     r = write(h->fd, buf, (size_t)size);
     if (r < 0) {
-        switch (errno) {
-        case EIO:
-        case ENXIO:
+        if (errno == EIO || errno == ENXIO)
             return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
-        }
         return hs_error(HS_ERROR_SYSTEM, "write('%s') failed: %s", h->dev->path,
                         strerror(errno));
     }

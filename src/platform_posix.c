@@ -65,12 +65,8 @@ int hs_poll(const hs_descriptor_set *set, int timeout)
 restart:
     r = poll(pfd, (nfds_t)set->count, hs_adjust_timeout(timeout, start));
     if (r < 0) {
-        switch (errno) {
-        case EINTR:
+        if (errno == EINTR)
             goto restart;
-        case ENOMEM:
-            return hs_error(HS_ERROR_MEMORY, NULL);
-        }
         return hs_error(HS_ERROR_SYSTEM, "poll() failed: %s", strerror(errno));
     }
     if (!r)

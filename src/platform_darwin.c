@@ -60,12 +60,9 @@ restart:
 
     r = select(FD_SETSIZE, &fds, NULL, NULL, timeout >= 0 ? &tv : NULL);
     if (r < 0) {
-        switch (errno) {
-        case EINTR:
+        if (errno == EINTR) {
             timeout = hs_adjust_timeout(timeout, start);
             goto restart;
-        case ENOMEM:
-            return hs_error(HS_ERROR_MEMORY, NULL);
         }
         return hs_error(HS_ERROR_SYSTEM, "poll() failed: %s", strerror(errno));
     }

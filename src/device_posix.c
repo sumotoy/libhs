@@ -83,8 +83,7 @@ error:
 static void close_posix_device(hs_handle *h)
 {
     if (h) {
-        if (h->fd >= 0)
-            close(h->fd);
+        close(h->fd);
         hs_device_unref(h->dev);
     }
 

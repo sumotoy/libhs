@@ -1043,7 +1043,6 @@ int hs_monitor_refresh(hs_monitor *monitor)
     _hs_list_foreach(cur, &notifications) {
         struct device_notification *notification = _hs_container_of(cur, struct device_notification, list);
 
-        r = 0;
         switch (notification->event) {
         case HS_MONITOR_EVENT_ADDED:
             r = create_device(monitor, notification->key, 0, NULL, 0);

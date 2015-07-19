@@ -44,7 +44,6 @@ int hs_poll(const hs_descriptor_set *set, int timeout)
 
     fd_set fds;
     uint64_t start;
-    struct timeval tv;
     int r;
 
     FD_ZERO(&fds);
@@ -54,16 +53,20 @@ int hs_poll(const hs_descriptor_set *set, int timeout)
     start = hs_millis();
 restart:
     if (timeout >= 0) {
-        tv.tv_sec = timeout / 1000;
-        tv.tv_usec = (timeout % 1000) * 1000;
-    }
+        int adjusted_timeout;
+        struct timeval tv;
 
-    r = select(FD_SETSIZE, &fds, NULL, NULL, timeout >= 0 ? &tv : NULL);
+        adjusted_timeout = hs_adjust_timeout(timeout, start);
+        tv.tv_sec = adjusted_timeout / 1000;
+        tv.tv_usec = (adjusted_timeout % 1000) * 1000;
+
+        r = select(FD_SETSIZE, &fds, NULL, NULL, &tv);
+    } else {
+        r = select(FD_SETSIZE, &fds, NULL, NULL, NULL);
+    }
     if (r < 0) {
-        if (errno == EINTR) {
-            timeout = hs_adjust_timeout(timeout, start);
+        if (errno == EINTR)
             goto restart;
-        }
         return hs_error(HS_ERROR_SYSTEM, "poll() failed: %s", strerror(errno));
     }
     if (!r)

@@ -405,6 +405,7 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     assert(size);
 
     fd_set fds;
+    uint64_t start;
     struct hid_report *report;
     ssize_t r;
 
@@ -414,13 +415,12 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     FD_ZERO(&fds);
     FD_SET(h->pipe[0], &fds);
 
+    start = hs_millis();
+restart:
     if (timeout >= 0) {
-        uint64_t start;
         int adjusted_timeout;
         struct timeval tv;
 
-        start = hs_millis();
-restart:
         adjusted_timeout = hs_adjust_timeout(timeout, start);
         tv.tv_sec = adjusted_timeout / 1000;
         tv.tv_usec = (adjusted_timeout % 1000) * 1000;

@@ -37,8 +37,10 @@ static int open_posix_device(hs_device *dev, hs_handle **rh)
     int r;
 
     h = calloc(1, sizeof(*h));
-    if (!h)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!h) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto error;
+    }
     h->dev = hs_device_ref(dev);
 
 restart:

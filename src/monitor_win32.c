@@ -199,8 +199,10 @@ static int wide_to_cstring(const wchar_t *wide, size_t size, char **rs)
     int len, r;
 
     tmp = calloc(1, size + sizeof(wchar_t));
-    if (!tmp)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!tmp) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto cleanup;
+    }
 
     memcpy(tmp, wide, size);
 
@@ -936,8 +938,10 @@ int hs_monitor_new(hs_monitor **rmonitor)
     int r;
 
     monitor = calloc(1, sizeof(*monitor));
-    if (!monitor)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!monitor) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto error;
+    }
 
     _hs_list_init(&monitor->controllers);
 

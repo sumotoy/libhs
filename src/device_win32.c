@@ -52,8 +52,10 @@ static int open_win32_device(hs_device *dev, hs_handle **rh)
     int r;
 
     h = calloc(1, sizeof(*h));
-    if (!h)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!h) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto error;
+    }
     h->dev = hs_device_ref(dev);
 
     h->handle = CreateFile(dev->path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,

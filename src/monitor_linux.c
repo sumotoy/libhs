@@ -264,8 +264,10 @@ int hs_monitor_new(hs_monitor **rmonitor)
     }
 
     monitor = calloc(1, sizeof(*monitor));
-    if (!monitor)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!monitor) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto error;
+    }
 
     monitor->monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (!monitor->monitor) {

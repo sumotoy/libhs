@@ -25,6 +25,8 @@
 #ifndef HS_COMMON_H
 #define HS_COMMON_H
 
+#include <stddef.h>
+#include <sys/types.h>
 #include <stdint.h>
 
 #define HS_VERSION 900

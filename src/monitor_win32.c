@@ -387,7 +387,7 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, cha
             return 0;
 
         // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
-        if (hs_win32_test_version(HS_WIN32_VERSION_VISTA)) {
+        if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
             r = find_device_port_vista(inst);
         } else {
             char child_key[256];
@@ -660,7 +660,7 @@ static int recurse_devices(hs_monitor *monitor, DEVINST inst, uint8_t ports[], u
 
     do {
         // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
-        if (hs_win32_test_version(HS_WIN32_VERSION_VISTA)) {
+        if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
             r = find_device_port_vista(child);
         } else {
             char key[256];

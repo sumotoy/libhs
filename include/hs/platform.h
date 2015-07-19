@@ -30,13 +30,15 @@
 HS_BEGIN_C
 
 #ifdef _WIN32
-typedef enum hs_win32_version {
-    HS_WIN32_VERSION_XP,
-    HS_WIN32_VERSION_VISTA,
-    HS_WIN32_VERSION_7,
-    HS_WIN32_VERSION_8,
-    HS_WIN32_VERSION_10
-} hs_win32_version;
+enum {
+    HS_WIN32_VERSION_2000 = 500,
+    HS_WIN32_VERSION_XP = 501,
+    HS_WIN32_VERSION_VISTA = 600,
+    HS_WIN32_VERSION_7 = 601,
+    HS_WIN32_VERSION_8 = 602,
+    HS_WIN32_VERSION_8_1 = 603,
+    HS_WIN32_VERSION_10 = 1000
+};
 #endif
 
 typedef struct hs_descriptor_set {
@@ -62,7 +64,7 @@ HS_PUBLIC uint32_t hs_linux_version(void);
 
 #ifdef _WIN32
 HS_PUBLIC char *hs_win32_strerror(unsigned long err);
-HS_PUBLIC bool hs_win32_test_version(hs_win32_version version);
+HS_PUBLIC uint32_t hs_win32_version(void);
 #endif
 
 HS_END_C

@@ -27,20 +27,22 @@
 #include <windows.h>
 #include "hs/platform.h"
 
+typedef LONG NTAPI RtlGetVersion_func(OSVERSIONINFOW *info);
 typedef ULONGLONG WINAPI GetTickCount64_func(void);
 
 static ULONGLONG WINAPI GetTickCount64_fallback(void);
 
 static GetTickCount64_func *GetTickCount64_;
+static RtlGetVersion_func *RtlGetVersion_;
 
 _HS_INIT()
 {
-    HANDLE h = GetModuleHandle("kernel32.dll");
-    assert(h);
-
-    GetTickCount64_ = (GetTickCount64_func *)GetProcAddress(h, "GetTickCount64");
+    GetTickCount64_ = (GetTickCount64_func *)GetProcAddress(GetModuleHandle("kernel32.dll"), "GetTickCount64");
     if (!GetTickCount64_)
         GetTickCount64_ = GetTickCount64_fallback;
+
+    RtlGetVersion_ = (RtlGetVersion_func *)GetProcAddress(GetModuleHandle("ntdll.dll"), "RtlGetVersion");
+    assert(RtlGetVersion_);
 }
 
 static ULONGLONG WINAPI GetTickCount64_fallback(void)
@@ -110,35 +112,13 @@ char *hs_win32_strerror(DWORD err)
     return buf;
 }
 
-bool hs_win32_test_version(hs_win32_version version)
+uint32_t hs_win32_version(void)
 {
-    OSVERSIONINFOEX info = {0};
-    DWORDLONG cond = 0;
+    OSVERSIONINFOW info;
 
-    switch (version) {
-    case HS_WIN32_VERSION_XP:
-        info.dwMajorVersion = 5;
-        info.dwMinorVersion = 1;
-        break;
-    case HS_WIN32_VERSION_VISTA:
-        info.dwMajorVersion = 6;
-        break;
-    case HS_WIN32_VERSION_7:
-        info.dwMajorVersion = 6;
-        info.dwMinorVersion = 1;
-        break;
-    case HS_WIN32_VERSION_8:
-        info.dwMajorVersion = 6;
-        info.dwMinorVersion = 2;
-        break;
-    case HS_WIN32_VERSION_10:
-        info.dwMajorVersion = 10;
-        info.dwMinorVersion = 0;
-        break;
-    }
+    // Windows 8.1 broke GetVersionEx, so bypass the intermediary
+    info.dwOSVersionInfoSize = sizeof(info);
+    RtlGetVersion_(&info);
 
-    VER_SET_CONDITION(cond, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    VER_SET_CONDITION(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
-
-    return VerifyVersionInfo(&info, VER_MAJORVERSION | VER_MINORVERSION, cond);
+    return info.dwMajorVersion * 100 + info.dwMinorVersion;
 }

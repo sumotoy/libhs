@@ -259,6 +259,7 @@ restart:
         if (r < 0) {
             if (errno == EINTR)
                 goto restart;
+
             return hs_error(HS_ERROR_SYSTEM, "poll('%s') failed: %s", h->dev->path,
                             strerror(errno));
         }

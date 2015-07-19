@@ -971,7 +971,6 @@ int hs_monitor_new(hs_monitor **rmonitor)
         r = monitor->ret;
         goto error;
     }
-
     ResetEvent(monitor->event);
 
     *rmonitor = monitor;

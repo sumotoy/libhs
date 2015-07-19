@@ -56,6 +56,10 @@ HS_PUBLIC void hs_descriptor_set_remove(hs_descriptor_set *set, int id);
 
 HS_PUBLIC int hs_poll(const hs_descriptor_set *set, int timeout);
 
+#ifdef __linux__
+HS_PUBLIC uint32_t hs_linux_version(void);
+#endif
+
 #ifdef _WIN32
 HS_PUBLIC char *hs_win32_strerror(unsigned long err);
 HS_PUBLIC bool hs_win32_test_version(hs_win32_version version);

@@ -24,6 +24,7 @@
 
 #include "util.h"
 #include <poll.h>
+#include <sys/utsname.h>
 #include <time.h>
 #include "hs/platform.h"
 
@@ -81,3 +82,27 @@ restart:
     }
     assert(false);
 }
+
+#ifdef __linux__
+uint32_t hs_linux_version(void)
+{
+    static uint32_t version;
+
+    if (version)
+        return version;
+
+    struct utsname name;
+    uint32_t major = 0, minor = 0, release = 0, patch = 0;
+
+    uname(&name);
+    sscanf(name.release, "%u.%u.%u.%u", &major, &minor, &release, &patch);
+
+    if (major >= 3) {
+        patch = release;
+        release = 0;
+    }
+    version = major * 10000000 + minor * 100000 + release * 1000 + patch;
+
+    return version;
+}
+#endif

@@ -43,6 +43,7 @@ struct udev_aggregate {
 };
 
 extern const struct _hs_device_vtable _hs_posix_device_vtable;
+extern const struct _hs_device_vtable _hs_linux_hid_vtable;
 
 static const char *device_subsystems[] = {
     "input",
@@ -89,12 +90,13 @@ static int fill_device_details(hs_device *dev, struct udev_aggregate *agg)
 
     if (strcmp(buf, "hidraw") == 0) {
         dev->type = HS_DEVICE_TYPE_HID;
+        dev->vtable = &_hs_linux_hid_vtable;
     } else if (strcmp(buf, "tty") == 0) {
         dev->type = HS_DEVICE_TYPE_SERIAL;
+        dev->vtable = &_hs_posix_device_vtable;
     } else {
         return 0;
     }
-    dev->vtable = &_hs_posix_device_vtable;
 
     buf = udev_device_get_devnode(agg->dev);
     if (!buf || access(buf, F_OK) != 0)

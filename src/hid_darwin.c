@@ -26,8 +26,8 @@
 #include <CoreFoundation/CFRunLoop.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/hid/IOHIDDevice.h>
+#include <poll.h>
 #include <pthread.h>
-#include <sys/select.h>
 #include <unistd.h>
 #include "device_priv.h"
 #include "hs/hid.h"
@@ -404,7 +404,7 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     assert(buf);
     assert(size);
 
-    fd_set fds;
+    struct pollfd pfd;
     uint64_t start;
     struct hid_report *report;
     ssize_t r;
@@ -412,28 +412,17 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     if (!h->hid)
         return hs_error(HS_ERROR_IO, "Device '%s' was removed", h->dev->path);
 
-    FD_ZERO(&fds);
-    FD_SET(h->pipe[0], &fds);
+    pfd.events = POLLIN;
+    pfd.fd = h->pipe[0];
 
     start = hs_millis();
 restart:
-    if (timeout >= 0) {
-        int adjusted_timeout;
-        struct timeval tv;
-
-        adjusted_timeout = hs_adjust_timeout(timeout, start);
-        tv.tv_sec = adjusted_timeout / 1000;
-        tv.tv_usec = (adjusted_timeout % 1000) * 1000;
-
-        r = select(h->pipe[0] + 1, &fds, NULL, NULL, &tv);
-    } else {
-        r = select(h->pipe[0] + 1, &fds, NULL, NULL, NULL);
-    }
+    r = poll(&pfd, 1, hs_adjust_timeout(timeout, start));
     if (r < 0) {
         if (errno == EINTR)
             goto restart;
 
-        return hs_error(HS_ERROR_SYSTEM, "select() failed: %s", strerror(errno));
+        return hs_error(HS_ERROR_SYSTEM, "poll('%s') failed: %s", h->dev->path, strerror(errno));
     }
     if (!r)
         return 0;

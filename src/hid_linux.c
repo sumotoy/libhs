@@ -378,7 +378,7 @@ ssize_t hs_hid_send_feature_report(hs_handle *h, const uint8_t *buf, size_t size
     if (size < 2)
         return 0;
 
-    int r;
+    ssize_t r;
 
 restart:
     r = ioctl(h->fd, HIDIOCSFEATURE(size), (const char *)buf);
@@ -386,11 +386,6 @@ restart:
         switch (errno) {
         case EINTR:
             goto restart;
-        case EAGAIN:
-#if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
-        case EWOULDBLOCK:
-#endif
-            return 0;
         case EIO:
         case ENXIO:
             return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
@@ -399,5 +394,5 @@ restart:
                         strerror(errno));
     }
 
-    return (ssize_t)size;
+    return r;
 }

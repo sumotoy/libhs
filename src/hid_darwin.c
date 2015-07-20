@@ -123,22 +123,22 @@ static void hid_report_callback(void *ctx, IOReturn result, void *sender,
     fire = _hs_list_is_empty(&h->reports);
 
     report = _hs_list_get_first(&h->free_reports, struct hid_report, list);
-    if (!report) {
-        if (h->allocated_reports < 64) {
-            // Don't forget the potential leading report ID
-            report = calloc(1, sizeof(struct hid_report) + h->size + 1);
-            if (!report) {
-                r = hs_error(HS_ERROR_MEMORY, NULL);
-                goto cleanup;
-            }
-            h->allocated_reports++;
-        } else {
-            // Drop oldest report, too bad for the user
-            report = _hs_list_get_first(&h->reports, struct hid_report, list);
-        }
-    }
-    if (report->list.prev)
+    if (report) {
         _hs_list_remove(&report->list);
+    } else {
+        if (h->allocated_reports == 64) {
+            r = 0;
+            goto cleanup;
+        }
+
+        // Don't forget the leading report ID
+        report = calloc(1, sizeof(struct hid_report) + h->size + 1);
+        if (!report) {
+            r = hs_error(HS_ERROR_MEMORY, NULL);
+            goto cleanup;
+        }
+        h->allocated_reports++;
+    }
 
     // You never know, even if h->size is supposed to be the maximum input report size
     if (report_size > (CFIndex)h->size)

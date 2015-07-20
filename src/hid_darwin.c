@@ -404,28 +404,31 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     assert(buf);
     assert(size);
 
-    struct pollfd pfd;
-    uint64_t start;
     struct hid_report *report;
     ssize_t r;
 
     if (!h->hid)
         return hs_error(HS_ERROR_IO, "Device '%s' was removed", h->dev->path);
 
-    pfd.events = POLLIN;
-    pfd.fd = h->pipe[0];
+    if (timeout) {
+        struct pollfd pfd;
+        uint64_t start;
 
-    start = hs_millis();
+        pfd.events = POLLIN;
+        pfd.fd = h->pipe[0];
+
+        start = hs_millis();
 restart:
-    r = poll(&pfd, 1, hs_adjust_timeout(timeout, start));
-    if (r < 0) {
-        if (errno == EINTR)
-            goto restart;
+        r = poll(&pfd, 1, hs_adjust_timeout(timeout, start));
+        if (r < 0) {
+            if (errno == EINTR)
+                goto restart;
 
-        return hs_error(HS_ERROR_SYSTEM, "poll('%s') failed: %s", h->dev->path, strerror(errno));
+            return hs_error(HS_ERROR_SYSTEM, "poll('%s') failed: %s", h->dev->path, strerror(errno));
+        }
+        if (!r)
+            return 0;
     }
-    if (!r)
-        return 0;
 
     pthread_mutex_lock(&h->mutex);
 
@@ -433,24 +436,28 @@ restart:
         r = h->thread_ret;
         h->thread_ret = 0;
 
-        goto cleanup;
+        goto reset;
     }
 
     report = _hs_list_get_first(&h->reports, struct hid_report, list);
-    assert(report);
+    if (!report) {
+        r = 0;
+        goto cleanup;
+    }
 
     if (size > report->size)
         size = report->size;
-
     memcpy(buf, report->data, size);
+    r = (ssize_t)size;
 
     _hs_list_remove(&report->list);
     _hs_list_add(&h->free_reports, &report->list);
 
-    r = (ssize_t)size;
-cleanup:
+reset:
     if (_hs_list_is_empty(&h->reports))
         reset_device_event(h);
+
+cleanup:
     pthread_mutex_unlock(&h->mutex);
     return r;
 }

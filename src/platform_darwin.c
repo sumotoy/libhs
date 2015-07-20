@@ -47,8 +47,12 @@ int hs_poll(const hs_descriptor_set *set, int timeout)
     int r;
 
     FD_ZERO(&fds);
-    for (unsigned int i = 0; i < set->count; i++)
+    for (unsigned int i = 0; i < set->count; i++) {
+        if (set->desc[i] >= FD_SETSIZE)
+            return hs_error(HS_ERROR_SYSTEM, "Cannot select() on file descriptor %d", set->desc[i]);
+
         FD_SET(set->desc[i], &fds);
+    }
 
     start = hs_millis();
 restart:

@@ -194,17 +194,15 @@ ssize_t hs_serial_write(hs_handle *h, const uint8_t *buf, ssize_t size)
     DWORD len;
     BOOL success;
 
-    success = WriteFile(h->handle, buf, (DWORD)size, &len, &ov);
-    if (!success) {
-        if (GetLastError() != ERROR_IO_PENDING) {
-            CancelIo(h->handle);
-            return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
-        }
-
-        success = GetOverlappedResult(h->handle, &ov, &len, TRUE);
-        if (!success)
-            return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
+    success = WriteFile(h->handle, buf, (DWORD)size, NULL, &ov);
+    if (!success && GetLastError() != ERROR_IO_PENDING) {
+        CancelIo(h->handle);
+        return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
     }
+
+    success = GetOverlappedResult(h->handle, &ov, &len, TRUE);
+    if (!success)
+        return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
 
     return (ssize_t)len;
 }

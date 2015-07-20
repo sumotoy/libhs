@@ -144,16 +144,9 @@ static void hid_report_callback(void *ctx, IOReturn result, void *sender,
     if (report_size > (CFIndex)h->size)
         report_size = (CFIndex)h->size;
 
-    if (report_id) {
-        report->data[0] = (uint8_t)report_id;
-        memcpy(report->data + 1, report_data, report_size);
-
-        report->size = (size_t)report_size + 1;
-    } else {
-        memcpy(report->data, report_data, report_size);
-
-        report->size = (size_t)report_size;
-    }
+    report->data[0] = (uint8_t)report_id;
+    memcpy(report->data + 1, report_data, report_size);
+    report->size = (size_t)report_size + 1;
 
     _hs_list_add_tail(&h->reports, &report->list);
 

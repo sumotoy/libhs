@@ -87,15 +87,9 @@ ssize_t hs_hid_read(hs_handle *h, uint8_t *buf, size_t size, int timeout)
     /* HID communication is message-based. So if the caller does not provide a big enough
        buffer, we can just discard the extra data, unlike for serial communication. */
     if (h->len) {
-        if (h->buf[0]) {
-            if (size > (size_t)h->len)
-                size = (size_t)h->len;
-            memcpy(buf, h->buf, size);
-        } else {
-            if (size > (size_t)--h->len)
-                size = (size_t)h->len;
-            memcpy(buf, h->buf + 1, size);
-        }
+        if (size > (size_t)h->len)
+            size = (size_t)h->len;
+        memcpy(buf, h->buf, size);
     } else {
         size = 0;
     }

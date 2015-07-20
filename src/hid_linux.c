@@ -267,22 +267,32 @@ restart:
             return 0;
     }
 
-    /* Work around a hidraw bug introduced in Linux 2.6.28 and fixed in Linux 2.6.34, see commit
-       https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5a38f2c7c4dd53d5be097930902c108e362584a3 */
-    if (detect_kernel26_byte_bug() && h->numbered_reports) {
-        if (size + 1 > h->buf_size) {
-            free(h->buf);
-            h->buf_size = 0;
+    if (h->numbered_reports) {
+        /* Work around a hidraw bug introduced in Linux 2.6.28 and fixed in Linux 2.6.34, see
+           https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5a38f2c7c4dd53d5be097930902c108e362584a3 */
+        if (detect_kernel26_byte_bug()) {
+            if (size + 1 > h->buf_size) {
+                free(h->buf);
+                h->buf_size = 0;
 
-            h->buf = malloc(size + 1);
-            if (!h->buf)
-                return hs_error(HS_ERROR_MEMORY, NULL);
-            h->buf_size = size + 1;
+                h->buf = malloc(size + 1);
+                if (!h->buf)
+                    return hs_error(HS_ERROR_MEMORY, NULL);
+                h->buf_size = size + 1;
+            }
+
+            r = read(h->fd, h->buf, size + 1);
+            if (r > 0)
+                memcpy(buf, h->buf + 1, (size_t)--r);
+        } else {
+            r = read(h->fd, buf, size);
         }
-
-        r = read(h->fd, h->buf, size + 1);
     } else {
-        r = read(h->fd, buf, size);
+        r = read(h->fd, buf + 1, size - 1);
+        if (r > 0) {
+            buf[0] = 0;
+            r++;
+        }
     }
     if (r < 0) {
         switch (errno) {
@@ -297,9 +307,6 @@ restart:
         }
         return hs_error(HS_ERROR_SYSTEM, "read('%s') failed: %s", h->dev->path, strerror(errno));
     }
-
-    if (detect_kernel26_byte_bug() && h->numbered_reports && r)
-        memcpy(buf, h->buf + 1, (size_t)--r);
 
     return r;
 }

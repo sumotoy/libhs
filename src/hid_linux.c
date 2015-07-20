@@ -332,6 +332,36 @@ restart:
     return r;
 }
 
+ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size)
+{
+    assert(h);
+    assert(h->dev->type == HS_DEVICE_TYPE_HID);
+    assert(buf);
+    assert(size);
+
+    ssize_t r;
+
+    if (size >= 2)
+        buf[1] = report_id;
+
+restart:
+    r = ioctl(h->fd, HIDIOCGFEATURE(size - 1), (const char *)buf + 1);
+    if (r < 0) {
+        switch (errno) {
+        case EINTR:
+            goto restart;
+        case EIO:
+        case ENXIO:
+            return hs_error(HS_ERROR_IO, "I/O error while reading from '%s'", h->dev->path);
+        }
+        return hs_error(HS_ERROR_SYSTEM, "ioctl('%s', HIDIOCGFEATURE) failed: %s", h->dev->path,
+                        strerror(errno));
+    }
+
+    buf[0] = report_id;
+    return r + 1;
+}
+
 ssize_t hs_hid_send_feature_report(hs_handle *h, const uint8_t *buf, size_t size)
 {
     assert(h);

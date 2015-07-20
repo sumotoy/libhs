@@ -496,6 +496,26 @@ ssize_t hs_hid_write(hs_handle *h, const uint8_t *buf, size_t size)
     return send_report(h, kIOHIDReportTypeOutput, buf, size);
 }
 
+ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size)
+{
+    assert(h);
+    assert(h->dev->type == HS_DEVICE_TYPE_HID);
+    assert(buf);
+    assert(size);
+
+    CFIndex len;
+    kern_return_t kret;
+
+    len = (CFIndex)size - 1;
+
+    kret = IOHIDDeviceGetReport(h->hid, kIOHIDReportTypeFeature, report_id, buf + 1, &len);
+    if (kret != kIOReturnSuccess)
+        return hs_error(HS_ERROR_SYSTEM, "IOHIDDeviceSetReport() failed");
+
+    buf[0] = report_id;
+    return (ssize_t)len;
+}
+
 ssize_t hs_hid_send_feature_report(hs_handle *h, const uint8_t *buf, size_t size)
 {
     assert(h);

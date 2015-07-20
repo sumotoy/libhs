@@ -25,8 +25,10 @@
 #include "util.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <hidclass.h>
 #include <hidsdi.h>
 #include <hidpi.h>
+#include <winioctl.h>
 #include "device_win32_priv.h"
 #include "hs/hid.h"
 #include "hs/platform.h"
@@ -131,6 +133,36 @@ ssize_t hs_hid_write(hs_handle *h, const uint8_t *buf, size_t size)
     }
 
     return (ssize_t)len;
+}
+
+ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size)
+{
+    assert(h);
+    assert(h->dev->type == HS_DEVICE_TYPE_HID);
+    assert(buf);
+    assert(size);
+
+    OVERLAPPED ov = {0};
+    DWORD len;
+    BOOL success;
+
+    buf[0] = report_id;
+    len = (DWORD)size;
+
+    success = DeviceIoControl(h->handle, IOCTL_HID_GET_FEATURE, buf, (DWORD)size, buf,
+                              (DWORD)size, NULL, &ov);
+    if (!success && GetLastError() != ERROR_IO_PENDING) {
+        CancelIo(h->handle);
+        return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
+    }
+
+    success = GetOverlappedResult(h->handle, &ov, &len, TRUE);
+    if (!success)
+        return hs_error(HS_ERROR_IO, "I/O error while writing to '%s'", h->dev->path);
+
+    /* Apparently the length returned by the IOCTL_HID_GET_FEATURE ioctl does not account
+       for the report ID byte. */
+    return (ssize_t)len + 1;
 }
 
 ssize_t hs_hid_send_feature_report(hs_handle *h, const uint8_t *buf, size_t size)

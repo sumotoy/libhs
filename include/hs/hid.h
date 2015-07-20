@@ -41,6 +41,7 @@ HS_PUBLIC int hs_hid_parse_descriptor(struct hs_handle *h, hs_hid_descriptor *de
 HS_PUBLIC ssize_t hs_hid_read(struct hs_handle *h, uint8_t *buf, size_t size, int timeout);
 HS_PUBLIC ssize_t hs_hid_write(struct hs_handle *h, const uint8_t *buf, size_t size);
 
+HS_PUBLIC ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size);
 HS_PUBLIC ssize_t hs_hid_send_feature_report(struct hs_handle *h, const uint8_t *buf, size_t size);
 
 HS_END_C

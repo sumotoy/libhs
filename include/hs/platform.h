@@ -64,7 +64,7 @@ HS_PUBLIC uint32_t hs_linux_version(void);
 #endif
 
 #ifdef _WIN32
-HS_PUBLIC char *hs_win32_strerror(unsigned long err);
+HS_PUBLIC const char *hs_win32_strerror(unsigned long err);
 HS_PUBLIC uint32_t hs_win32_version(void);
 #endif
 

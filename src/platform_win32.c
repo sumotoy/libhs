@@ -87,7 +87,7 @@ int hs_poll(const hs_descriptor_set *set, int timeout)
     return set->id[ret - WAIT_OBJECT_0];
 }
 
-char *hs_win32_strerror(DWORD err)
+const char *hs_win32_strerror(DWORD err)
 {
     static char buf[2048];
     char *ptr;

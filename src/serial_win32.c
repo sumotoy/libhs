@@ -66,14 +66,14 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
         assert(false);
     }
 
-    switch (flags & HS_SERIAL_CSIZE_MASK) {
-    case HS_SERIAL_5BITS_CSIZE:
+    switch (flags & HS_SERIAL_MASK_CSIZE) {
+    case HS_SERIAL_CSIZE_5BITS:
         dcb.ByteSize = 5;
         break;
-    case HS_SERIAL_6BITS_CSIZE:
+    case HS_SERIAL_CSIZE_6BITS:
         dcb.ByteSize = 6;
         break;
-    case HS_SERIAL_7BITS_CSIZE:
+    case HS_SERIAL_CSIZE_7BITS:
         dcb.ByteSize = 7;
         break;
 
@@ -82,16 +82,16 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
         break;
     }
 
-    switch (flags & HS_SERIAL_PARITY_MASK) {
+    switch (flags & HS_SERIAL_MASK_PARITY) {
     case 0:
         dcb.fParity = FALSE;
         dcb.Parity = NOPARITY;
         break;
-    case HS_SERIAL_ODD_PARITY:
+    case HS_SERIAL_PARITY_ODD:
         dcb.fParity = TRUE;
         dcb.Parity = ODDPARITY;
         break;
-    case HS_SERIAL_EVEN_PARITY:
+    case HS_SERIAL_PARITY_EVEN:
         dcb.fParity = TRUE;
         dcb.Parity = EVENPARITY;
         break;
@@ -101,7 +101,7 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     }
 
     dcb.StopBits = 0;
-    if (flags & HS_SERIAL_2BITS_STOP)
+    if (flags & HS_SERIAL_STOP_2BITS)
         dcb.StopBits = TWOSTOPBITS;
 
     dcb.fOutxCtsFlow = FALSE;
@@ -111,14 +111,14 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     dcb.fOutX = FALSE;
     dcb.fInX = FALSE;
 
-    switch (flags & HS_SERIAL_FLOW_MASK) {
+    switch (flags & HS_SERIAL_MASK_FLOW) {
     case 0:
         break;
-    case HS_SERIAL_XONXOFF_FLOW:
+    case HS_SERIAL_FLOW_XONXOFF:
         dcb.fOutX = TRUE;
         dcb.fInX = TRUE;
         break;
-    case HS_SERIAL_RTSCTS_FLOW:
+    case HS_SERIAL_FLOW_RTSCTS:
         dcb.fOutxCtsFlow = TRUE;
         dcb.fRtsControl = RTS_CONTROL_ENABLE;
         break;

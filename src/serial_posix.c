@@ -103,14 +103,14 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     cfsetospeed(&tio, rate);
 
     tio.c_cflag &= (unsigned int)~CSIZE;
-    switch (flags & HS_SERIAL_CSIZE_MASK) {
-    case HS_SERIAL_5BITS_CSIZE:
+    switch (flags & HS_SERIAL_MASK_CSIZE) {
+    case HS_SERIAL_CSIZE_5BITS:
         tio.c_cflag |= CS5;
         break;
-    case HS_SERIAL_6BITS_CSIZE:
+    case HS_SERIAL_CSIZE_6BITS:
         tio.c_cflag |= CS6;
         break;
-    case HS_SERIAL_7BITS_CSIZE:
+    case HS_SERIAL_CSIZE_7BITS:
         tio.c_cflag |= CS7;
         break;
 
@@ -120,13 +120,13 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     }
 
     tio.c_cflag &= (unsigned int)~(PARENB | PARODD);
-    switch (flags & HS_SERIAL_PARITY_MASK) {
+    switch (flags & HS_SERIAL_MASK_PARITY) {
     case 0:
         break;
-    case HS_SERIAL_ODD_PARITY:
+    case HS_SERIAL_PARITY_ODD:
         tio.c_cflag |= PARENB | PARODD;
         break;
-    case HS_SERIAL_EVEN_PARITY:
+    case HS_SERIAL_PARITY_EVEN:
         tio.c_cflag |= PARENB;
         break;
 
@@ -135,18 +135,18 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     }
 
     tio.c_cflag &= (unsigned int)~CSTOPB;
-    if (flags & HS_SERIAL_2BITS_STOP)
+    if (flags & HS_SERIAL_STOP_2BITS)
         tio.c_cflag |= CSTOPB;
 
     tio.c_cflag &= (unsigned int)~CRTSCTS;
     tio.c_iflag &= (unsigned int)~(IXON | IXOFF);
-    switch (flags & HS_SERIAL_FLOW_MASK) {
+    switch (flags & HS_SERIAL_MASK_FLOW) {
     case 0:
         break;
-    case HS_SERIAL_XONXOFF_FLOW:
+    case HS_SERIAL_FLOW_XONXOFF:
         tio.c_iflag |= IXON | IXOFF;
         break;
-    case HS_SERIAL_RTSCTS_FLOW:
+    case HS_SERIAL_FLOW_RTSCTS:
         tio.c_cflag |= CRTSCTS;
         break;
 
@@ -155,7 +155,7 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     }
 
     tio.c_cflag &= (unsigned int)~HUPCL;
-    if (!(flags & HS_SERIAL_NOHUP_CLOSE))
+    if (!(flags & HS_SERIAL_CLOSE_NOHUP))
         tio.c_cflag |= HUPCL;
 
     r = tcsetattr(h->fd, TCSANOW, &tio);

@@ -66,10 +66,15 @@ struct usb_controller {
     char *roothub_id;
 };
 
+enum device_event {
+    DEVICE_EVENT_ADDED,
+    DEVICE_EVENT_REMOVED
+};
+
 struct device_notification {
     _hs_list_head list;
 
-    hs_monitor_event event;
+    enum device_event event;
     char *key;
 };
 
@@ -776,7 +781,7 @@ cleanup:
     return 0;
 }
 
-static int post_device_event(hs_monitor *monitor, hs_monitor_event event, DEV_BROADCAST_DEVICEINTERFACE *data)
+static int post_device_event(hs_monitor *monitor, enum device_event event, DEV_BROADCAST_DEVICEINTERFACE *data)
 {
     struct device_notification *notification;
     int r;
@@ -815,10 +820,10 @@ static LRESULT __stdcall window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         r = 0;
         switch (wparam) {
         case DBT_DEVICEARRIVAL:
-            r = post_device_event(monitor, HS_MONITOR_EVENT_ADDED, (DEV_BROADCAST_DEVICEINTERFACE *)lparam);
+            r = post_device_event(monitor, DEVICE_EVENT_ADDED, (DEV_BROADCAST_DEVICEINTERFACE *)lparam);
             break;
         case DBT_DEVICEREMOVECOMPLETE:
-            r = post_device_event(monitor, HS_MONITOR_EVENT_REMOVED, (DEV_BROADCAST_DEVICEINTERFACE *)lparam);
+            r = post_device_event(monitor, DEVICE_EVENT_REMOVED, (DEV_BROADCAST_DEVICEINTERFACE *)lparam);
             break;
         }
         if (r < 0) {
@@ -1047,11 +1052,11 @@ int hs_monitor_refresh(hs_monitor *monitor)
         struct device_notification *notification = _hs_container_of(cur, struct device_notification, list);
 
         switch (notification->event) {
-        case HS_MONITOR_EVENT_ADDED:
+        case DEVICE_EVENT_ADDED:
             r = create_device(monitor, notification->key, 0, NULL, 0);
             break;
 
-        case HS_MONITOR_EVENT_REMOVED:
+        case DEVICE_EVENT_REMOVED:
             _hs_monitor_remove(monitor, notification->key);
             r = 0;
             break;

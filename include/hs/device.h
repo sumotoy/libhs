@@ -32,6 +32,13 @@ HS_BEGIN_C
 typedef struct hs_device hs_device;
 typedef struct hs_handle hs_handle;
 
+typedef enum hs_device_status {
+    /** Device has been disconnected. */
+    HS_DEVICE_STATUS_DISCONNECTED,
+    /** Device is connected and ready. */
+    HS_DEVICE_STATUS_ONLINE
+} hs_device_status;
+
 typedef enum hs_device_type {
     HS_DEVICE_TYPE_HID,
     HS_DEVICE_TYPE_SERIAL
@@ -40,6 +47,7 @@ typedef enum hs_device_type {
 HS_PUBLIC hs_device *hs_device_ref(hs_device *dev);
 HS_PUBLIC void hs_device_unref(hs_device *dev);
 
+HS_PUBLIC hs_device_status hs_device_get_status(const hs_device *dev);
 HS_PUBLIC hs_device_type hs_device_get_type(const hs_device *dev);
 HS_PUBLIC const char *hs_device_get_location(const hs_device *dev);
 HS_PUBLIC uint8_t hs_device_get_interface_number(const hs_device *dev);

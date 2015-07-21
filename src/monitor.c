@@ -105,13 +105,13 @@ void _hs_monitor_release(hs_monitor *monitor)
     _hs_htable_release(&monitor->devices);
 }
 
-static int trigger_callbacks(hs_device *dev, hs_monitor_event event)
+static int trigger_callbacks(hs_device *dev)
 {
     _hs_list_foreach(cur, &dev->monitor->callbacks) {
         struct callback *callback = _hs_container_of(cur, struct callback, list);
         int r;
 
-        r = (*callback->f)(event, dev, callback->udata);
+        r = (*callback->f)(dev, callback->udata);
         if (r < 0)
             return r;
         if (r) {
@@ -132,12 +132,13 @@ int _hs_monitor_add(hs_monitor *monitor, hs_device *dev)
             return 0;
     }
 
-    hs_device_ref(dev);
-
     dev->monitor = monitor;
+    dev->state = HS_DEVICE_STATUS_ONLINE;
+
+    hs_device_ref(dev);
     _hs_htable_add(&monitor->devices, _hs_htable_hash_str(dev->key), &dev->hnode);
 
-    return trigger_callbacks(dev, HS_MONITOR_EVENT_ADDED);
+    return trigger_callbacks(dev);
 }
 
 void _hs_monitor_remove(hs_monitor *monitor, const char *key)
@@ -146,11 +147,11 @@ void _hs_monitor_remove(hs_monitor *monitor, const char *key)
         hs_device *dev = _hs_container_of(cur, hs_device, hnode);
 
         if (strcmp(dev->key, key) == 0) {
-            trigger_callbacks(dev, HS_MONITOR_EVENT_REMOVED);
+            dev->state = HS_DEVICE_STATUS_DISCONNECTED;
+
+            trigger_callbacks(dev);
 
             _hs_htable_remove(&dev->hnode);
-            dev->monitor = NULL;
-
             hs_device_unref(dev);
         }
     }
@@ -165,7 +166,7 @@ int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void 
         hs_device *dev = _hs_container_of(cur, hs_device, hnode);
         int r;
 
-        r = (*f)(HS_MONITOR_EVENT_ADDED, dev, udata);
+        r = (*f)(dev, udata);
         if (r)
             return r;
     }

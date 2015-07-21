@@ -33,12 +33,7 @@ struct hs_device;
 
 typedef struct hs_monitor hs_monitor;
 
-typedef enum hs_monitor_event {
-    HS_MONITOR_EVENT_ADDED,
-    HS_MONITOR_EVENT_REMOVED
-} hs_monitor_event;
-
-typedef int hs_monitor_callback_func(hs_monitor_event event, struct hs_device *dev, void *udata);
+typedef int hs_monitor_callback_func(struct hs_device *dev, void *udata);
 
 HS_PUBLIC int hs_monitor_new(hs_monitor **rmonitor);
 HS_PUBLIC void hs_monitor_free(hs_monitor *monitor);

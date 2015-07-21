@@ -54,6 +54,12 @@ void hs_device_unref(hs_device *dev)
     free(dev);
 }
 
+hs_device_status hs_device_get_status(const hs_device *dev)
+{
+    assert(dev);
+    return dev->state;
+}
+
 hs_device_type hs_device_get_type(const hs_device *dev)
 {
     assert(dev);

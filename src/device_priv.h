@@ -50,6 +50,8 @@ struct hs_device {
     hs_device_type type;
     const struct _hs_device_vtable *vtable;
 
+    hs_device_status state;
+
     char *location;
     char *path;
 

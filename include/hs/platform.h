@@ -30,7 +30,7 @@
 HS_BEGIN_C
 
 #ifdef _WIN32
-enum {
+enum hs_win32_release {
     HS_WIN32_VERSION_2000 = 500,
     HS_WIN32_VERSION_XP = 501,
     HS_WIN32_VERSION_2003 = 502,

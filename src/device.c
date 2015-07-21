@@ -96,7 +96,7 @@ uint16_t hs_device_get_pid(const hs_device *dev)
     return dev->pid;
 }
 
-const char *hs_device_get_serial_number(const hs_device *dev)
+const char *hs_device_get_serial_number_string(const hs_device *dev)
 {
     assert(dev);
     return dev->serial;

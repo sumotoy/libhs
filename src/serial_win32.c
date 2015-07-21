@@ -44,9 +44,6 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
         return hs_error(HS_ERROR_SYSTEM, "GetCommState() failed: %s", hs_win32_strerror(0));
 
     switch (rate) {
-    case 0:
-    case 50:
-    case 75:
     case 110:
     case 134:
     case 150:

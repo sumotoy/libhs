@@ -49,15 +49,6 @@ int hs_serial_set_attributes(hs_handle *h, uint32_t rate, int flags)
     tio.c_cflag |= CLOCAL;
 
     switch (rate) {
-    case 0:
-        rate = B0;
-        break;
-    case 50:
-        rate = B50;
-        break;
-    case 75:
-        rate = B75;
-        break;
     case 110:
         rate = B110;
         break;

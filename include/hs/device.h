@@ -29,6 +29,8 @@
 
 HS_BEGIN_C
 
+struct hs_monitor;
+
 typedef struct hs_device hs_device;
 typedef struct hs_handle hs_handle;
 
@@ -55,6 +57,7 @@ HS_PUBLIC const char *hs_device_get_path(const hs_device *dev);
 HS_PUBLIC uint16_t hs_device_get_vid(const hs_device *dev);
 HS_PUBLIC uint16_t hs_device_get_pid(const hs_device *dev);
 HS_PUBLIC const char *hs_device_get_serial_number_string(const hs_device *dev);
+HS_PUBLIC struct hs_monitor *hs_device_get_monitor(const hs_device *dev);
 
 HS_PUBLIC int hs_device_open(hs_device *dev, hs_handle **rh);
 

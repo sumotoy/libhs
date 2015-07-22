@@ -24,6 +24,7 @@
 
 #include "util.h"
 #include "device_priv.h"
+#include "hs/monitor.h"
 #include "hs/platform.h"
 
 struct hs_handle {
@@ -100,6 +101,12 @@ const char *hs_device_get_serial_number_string(const hs_device *dev)
 {
     assert(dev);
     return dev->serial;
+}
+
+hs_monitor *hs_device_get_monitor(const hs_device *dev)
+{
+    assert(dev);
+    return dev->monitor;
 }
 
 int hs_device_open(hs_device *dev, hs_handle **rh)

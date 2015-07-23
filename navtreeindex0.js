@@ -1,0 +1,23 @@
+var NAVTREEINDEX0 =
+{
+"annotated.html":[2,0],
+"classes.html":[2,1],
+"common_8h_source.html":[3,0,0,0,0],
+"device_8h_source.html":[3,0,0,0,1],
+"dir_5a7b6342532dea88dfde2bc79b8f4aca.html":[3,0,0,0],
+"dir_d44c64559bbebec7f509842c48db8b23.html":[3,0,0],
+"files.html":[3,0],
+"hid_8h_source.html":[3,0,0,0,2],
+"hs_8h_source.html":[3,0,0,1],
+"index.html":[],
+"index.html#overview":[0],
+"install.html":[1],
+"install.html#install_cross":[1,3],
+"install.html#install_linux":[1,1],
+"install.html#install_osx":[1,2],
+"install.html#install_windows":[1,0],
+"monitor_8h_source.html":[3,0,0,0,3],
+"pages.html":[],
+"platform_8h_source.html":[3,0,0,0,4],
+"serial_8h_source.html":[3,0,0,0,5]
+};

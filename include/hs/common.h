@@ -29,9 +29,6 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-#define HS_VERSION 900
-#define HS_VERSION_STRING "0.9.0"
-
 #ifdef __cplusplus
     #define HS_BEGIN_C extern "C" {
     #define HS_END_C }
@@ -41,6 +38,9 @@
 #endif
 
 HS_BEGIN_C
+
+#define HS_VERSION 900
+#define HS_VERSION_STRING "0.9.0"
 
 #if defined(__GNUC__)
     #define HS_PUBLIC __attribute__((__visibility__("default")))

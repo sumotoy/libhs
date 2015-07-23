@@ -23,6 +23,8 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libhs C)
 
+option(BUILD_SHARED_LIBS "Build libhs with shared libraries." ON)
+
 if(CMAKE_C_COMPILER_ID STREQUAL Clang)
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
@@ -126,12 +128,5 @@ else()
     endif()
 endif()
 
-add_library(hs OBJECT ${HS_SOURCES})
-set_target_properties(hs PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-add_library(hs_shared SHARED $<TARGET_OBJECTS:hs>)
-set_target_properties(hs_shared PROPERTIES OUTPUT_NAME hs CLEAN_DIRECT_OUTPUT ON)
-target_link_libraries(hs_shared ${HS_LINK_LIBRARIES})
-add_library(hs_static STATIC $<TARGET_OBJECTS:hs>)
-set_target_properties(hs_static PROPERTIES OUTPUT_NAME hs CLEAN_DIRECT_OUTPUT ON)
-target_link_libraries(hs_static ${HS_LINK_LIBRARIES})
+add_library(hs ${HS_SOURCES})
+target_link_libraries(hs ${HS_LINK_LIBRARIES})

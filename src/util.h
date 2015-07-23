@@ -25,12 +25,15 @@
 #ifndef _HS_UTIL_H
 #define _HS_UTIL_H
 
-#include "hs/common.h"
-#include "compat.h"
+// Disable MSVC's stupid deprecation warnings
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
 
 // Avoid msvcrt's limited versions of printf/scanf functions
 #define __USE_MINGW_ANSI_STDIO 1
 
+#include "hs/common.h"
+#include "compat.h"
 #include <assert.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -40,10 +43,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__)
     #define _HS_INIT() \
         __attribute__((constructor)) \
         static void _HS_UNIQUE_ID(init_)(void)
+#elif defined(_MSC_VER)
+    #define _HS_INIT() \
+        static void __cdecl _HS_UNIQUE_ID(init_)(void); \
+        __pragma(section(".CRT$XCU", read)) \
+        __declspec(allocate(".CRT$XCU")) void (__cdecl* _HS_UNIQUE_ID(init_) ## _)(void) = _HS_UNIQUE_ID(init_); \
+        static void __cdecl _HS_UNIQUE_ID(init_)(void)
 #endif
 
 #define _HS_UNUSED(arg) ((void)(arg))

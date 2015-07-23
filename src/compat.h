@@ -33,9 +33,12 @@
 #else
     /* This file is used when building with qmake, otherwise CMake detects
        these features. */
-    #if defined(_WIN32)
+    #if defined(__MINGW32__)
         /* #undef HAVE_STPCPY */
         #define HAVE_ASPRINTF
+    #elif defined(_MSC_VER)
+        /* #undef HAVE_STPCPY */
+        /* #undef HAVE_ASPRINTF */
     #elif defined(__APPLE__)
         #define HAVE_STPCPY
         #define HAVE_ASPRINTF

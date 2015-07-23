@@ -23,6 +23,9 @@
  */
 
 #include "util.h"
+#ifdef _MSC_VER
+    #include <windows.h>
+#endif
 #include "device_priv.h"
 #include "hs/monitor.h"
 #include "hs/platform.h"
@@ -35,16 +38,25 @@ hs_device *hs_device_ref(hs_device *dev)
 {
     assert(dev);
 
+#ifdef _MSC_VER
+    InterlockedIncrement(&dev->refcount);
+#else
     __atomic_fetch_add(&dev->refcount, 1, __ATOMIC_RELAXED);
+#endif
     return dev;
 }
 
 void hs_device_unref(hs_device *dev)
 {
     if (dev) {
+#ifdef _MSC_VER
+        if (InterlockedDecrement(&dev->refcount))
+            return;
+#else
         if (__atomic_fetch_sub(&dev->refcount, 1, __ATOMIC_RELEASE) > 1)
             return;
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
+#endif
 
         free(dev->key);
         free(dev->location);

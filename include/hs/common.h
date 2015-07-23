@@ -42,13 +42,31 @@
 
 HS_BEGIN_C
 
-#ifdef __GNUC__
+#if defined(__GNUC__)
     #define HS_PUBLIC __attribute__((__visibility__("default")))
 
     #ifdef __MINGW_PRINTF_FORMAT
         #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt, first)))
     #else
         #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__printf__, fmt, first)))
+    #endif
+#elif _MSC_VER >= 1900
+    #ifdef _HS_UTIL_H
+        #define HS_PUBLIC __declspec(dllexport)
+    #else
+        #define HS_PUBLIC __declspec(dllimport)
+    #endif
+
+    #define HS_PRINTF_FORMAT(fmt, first)
+
+    // HAVE_SSIZE_T is used this way by other projects
+    #ifndef HAVE_SSIZE_T
+        #define HAVE_SSIZE_T
+        #ifdef _WIN64
+typedef __int64 ssize_t;
+        #else
+typedef long ssize_t;
+        #endif
     #endif
 #else
     #error "This compiler is not supported"

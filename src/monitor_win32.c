@@ -29,9 +29,11 @@
 #include <dbt.h>
 #include <devioctl.h>
 #include <hidsdi.h>
+#include <initguid.h>
 #include <process.h>
 #include <setupapi.h>
 #include <usb.h>
+#include <usbiodef.h>
 #include <usbioctl.h>
 #include <usbuser.h>
 #include "device_priv.h"
@@ -811,7 +813,7 @@ error:
 
 static LRESULT __stdcall window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    hs_monitor *monitor = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    hs_monitor *monitor = (hs_monitor *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
     int r;
 

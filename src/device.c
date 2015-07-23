@@ -126,6 +126,9 @@ int hs_device_open(hs_device *dev, hs_handle **rh)
     assert(dev);
     assert(rh);
 
+    if (dev->state != HS_DEVICE_STATUS_ONLINE)
+        return hs_error(HS_ERROR_NOT_FOUND, "Device '%s' is not connected", dev->path);
+
     return (*dev->vtable->open)(dev, rh);
 }
 

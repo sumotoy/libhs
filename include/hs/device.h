@@ -162,8 +162,11 @@ HS_PUBLIC uint16_t hs_device_get_pid(const hs_device *dev);
  * @ingroup device
  * @brief Get the device serial number string.
  *
+ * This string is internal to the device object, you must not change or free it. NULL means
+ * the device did not report a serial number.
+ *
  * @param dev Device object.
- * @return This function returns the serial number string, you must not change or free it.
+ * @return This function returns the serial number string, or NULL if the device did not report one.
  */
 HS_PUBLIC const char *hs_device_get_serial_number_string(const hs_device *dev);
 /**

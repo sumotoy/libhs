@@ -36,8 +36,8 @@ static int device_callback(hs_device *dev, void *udata)
 {
     (void)(udata);
 
-    int event_char;
-    const char *type;
+    int event_char = '?';
+    const char *type = "?";
 
     /* Use hs_device_get_status() to differenciate between added and removed devices,
        when called from hs_monitor_enumerate() it is always HS_DEVICE_STATUS_ONLINE. */
@@ -59,8 +59,20 @@ static int device_callback(hs_device *dev, void *udata)
         break;
     }
 
-    printf("%c %s %04"PRIx16":%04"PRIx16" (%s)\n  @ %s\n", event_char, hs_device_get_location(dev),
-           hs_device_get_vid(dev), hs_device_get_pid(dev), type, hs_device_get_path(dev));
+    printf("%c %s@%"PRIu8" %04"PRIx16":%04"PRIx16" (%s)\n",
+           event_char, hs_device_get_location(dev), hs_device_get_interface_number(dev),
+           hs_device_get_vid(dev), hs_device_get_pid(dev), type);
+
+#define PRINT_PROPERTY(name, prop) \
+        if (prop(dev)) \
+            printf("  - " name " %s\n", prop(dev));
+
+    PRINT_PROPERTY("device node:  ", hs_device_get_path);
+    PRINT_PROPERTY("manufacturer: ", hs_device_get_manufacturer_string);
+    PRINT_PROPERTY("product:      ", hs_device_get_product_string);
+    PRINT_PROPERTY("serial number:", hs_device_get_serial_number_string);
+
+#undef PRINT_PROPERTY
 
     /* If you return a non-zero value, the enumeration/refresh is aborted and this value
        is returned from the calling function. */

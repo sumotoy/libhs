@@ -23,8 +23,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libhs C)
 
-option(BUILD_SHARED_LIBS "Build libhs with shared libraries." ON)
-
 if(CMAKE_C_COMPILER_ID STREQUAL Clang)
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()

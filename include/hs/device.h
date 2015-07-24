@@ -160,6 +160,28 @@ HS_PUBLIC uint16_t hs_device_get_vid(const hs_device *dev);
 HS_PUBLIC uint16_t hs_device_get_pid(const hs_device *dev);
 /**
  * @ingroup device
+ * @brief Get the device manufacturer string.
+ *
+ * This string is internal to the device object, you must not change or free it. NULL means
+ * the device did not report a manufacturer string.
+ *
+ * @param dev Device object.
+ * @return This function returns the manufacturer string, or NULL if the device did not report one.
+ */
+HS_PUBLIC const char *hs_device_get_manufacturer_string(const hs_device *dev);
+/**
+ * @ingroup device
+ * @brief Get the device product string.
+ *
+ * This string is internal to the device object, you must not change or free it. NULL means
+ * the device did not report a product string.
+ *
+ * @param dev Device object.
+ * @return This function returns the product string, or NULL if the device did not report one.
+ */
+HS_PUBLIC const char *hs_device_get_product_string(const hs_device *dev);
+/**
+ * @ingroup device
  * @brief Get the device serial number string.
  *
  * This string is internal to the device object, you must not change or free it. NULL means

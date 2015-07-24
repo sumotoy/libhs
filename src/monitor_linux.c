@@ -129,6 +129,20 @@ static int fill_device_details(hs_device *dev, struct udev_aggregate *agg)
     if (errno)
         return 0;
 
+    buf = udev_device_get_sysattr_value(agg->usb, "manufacturer");
+    if (buf) {
+        dev->manufacturer = strdup(buf);
+        if (!dev->manufacturer)
+            return hs_error(HS_ERROR_MEMORY, NULL);
+    }
+
+    buf = udev_device_get_sysattr_value(agg->usb, "product");
+    if (buf) {
+        dev->product = strdup(buf);
+        if (!dev->product)
+            return hs_error(HS_ERROR_MEMORY, NULL);
+    }
+
     buf = udev_device_get_sysattr_value(agg->usb, "serial");
     if (buf) {
         dev->serial = strdup(buf);

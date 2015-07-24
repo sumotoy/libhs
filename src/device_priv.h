@@ -57,6 +57,9 @@ struct hs_device {
 
     uint16_t vid;
     uint16_t pid;
+
+    char *manufacturer;
+    char *product;
     char *serial;
 
     uint8_t iface;

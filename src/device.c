@@ -61,6 +61,9 @@ void hs_device_unref(hs_device *dev)
         free(dev->key);
         free(dev->location);
         free(dev->path);
+
+        free(dev->manufacturer);
+        free(dev->product);
         free(dev->serial);
     }
 
@@ -107,6 +110,18 @@ uint16_t hs_device_get_pid(const hs_device *dev)
 {
     assert(dev);
     return dev->pid;
+}
+
+const char *hs_device_get_manufacturer_string(const hs_device *dev)
+{
+    assert(dev);
+    return dev->manufacturer;
+}
+
+const char *hs_device_get_product_string(const hs_device *dev)
+{
+    assert(dev);
+    return dev->product;
 }
 
 const char *hs_device_get_serial_number_string(const hs_device *dev)

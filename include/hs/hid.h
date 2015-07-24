@@ -31,6 +31,7 @@ HS_BEGIN_C
 
 /**
  * @defgroup hid HID device I/O
+ * @brief Send and receive HID reports (input, output, feature) to and from HID devices.
  */
 
 struct hs_handle;

@@ -31,6 +31,7 @@ HS_BEGIN_C
 
 /**
  * @defgroup device Device handling
+ * @brief Access device information and open device handles.
  */
 
 struct hs_monitor;

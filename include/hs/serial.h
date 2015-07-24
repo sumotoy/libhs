@@ -31,6 +31,7 @@ HS_BEGIN_C
 
 /**
  * @defgroup serial Serial device I/O
+ * @brief Send and receive bytes to and from serial devices.
  */
 
 struct hs_handle;

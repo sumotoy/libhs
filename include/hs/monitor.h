@@ -31,6 +31,7 @@ HS_BEGIN_C
 
 /**
  * @defgroup monitor Device discovery
+ * @brief Discover devices and react when devices are added and removed.
  */
 
 struct hs_device;

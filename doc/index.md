@@ -11,4 +11,6 @@ libhs is a C library to enumerate HID and serial devices and interact with them.
 You can find the [lastest release on GitHub](https://github.com/Koromix/libhs/releases).
 Pre-built binaries are available for Windows (MSVC 2015 and MinGW-w64) and Mac OS X (Clang).
 
-Refer to the [installation page](@ref install) for more information.
+To get started you can:
+- [download or build libhs](@ref install)
+- [consult the reference documentation](modules.html)

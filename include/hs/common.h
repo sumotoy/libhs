@@ -41,6 +41,7 @@ HS_BEGIN_C
 
 /**
  * @defgroup misc Miscellaneous
+ * @brief Error management and platform-specific functions.
  */
 
  /**

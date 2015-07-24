@@ -31,6 +31,24 @@ HS_BEGIN_C
 
 struct hs_handle;
 
+enum hs_serial_rate {
+    HS_SERIAL_RATE_110    = 110,
+    HS_SERIAL_RATE_134    = 134,
+    HS_SERIAL_RATE_150    = 150,
+    HS_SERIAL_RATE_200    = 200,
+    HS_SERIAL_RATE_300    = 300,
+    HS_SERIAL_RATE_600    = 600,
+    HS_SERIAL_RATE_1200   = 1200,
+    HS_SERIAL_RATE_1800   = 1800,
+    HS_SERIAL_RATE_2400   = 2400,
+    HS_SERIAL_RATE_4800   = 4800,
+    HS_SERIAL_RATE_9600   = 9600,
+    HS_SERIAL_RATE_19200  = 19200,
+    HS_SERIAL_RATE_38400  = 38400,
+    HS_SERIAL_RATE_57600  = 57600,
+    HS_SERIAL_RATE_115200 = 115200
+};
+
 enum hs_serial_mask {
     HS_SERIAL_MASK_CSIZE  = 0x3,
     HS_SERIAL_MASK_PARITY = 0xC,
@@ -53,24 +71,6 @@ enum hs_serial_flag {
     HS_SERIAL_FLOW_RTSCTS  = 0x40,
 
     HS_SERIAL_CLOSE_NOHUP  = 0x80
-};
-
-enum hs_serial_rate {
-    HS_SERIAL_RATE_110    = 110,
-    HS_SERIAL_RATE_134    = 134,
-    HS_SERIAL_RATE_150    = 150,
-    HS_SERIAL_RATE_200    = 200,
-    HS_SERIAL_RATE_300    = 300,
-    HS_SERIAL_RATE_600    = 600,
-    HS_SERIAL_RATE_1200   = 1200,
-    HS_SERIAL_RATE_1800   = 1800,
-    HS_SERIAL_RATE_2400   = 2400,
-    HS_SERIAL_RATE_4800   = 4800,
-    HS_SERIAL_RATE_9600   = 9600,
-    HS_SERIAL_RATE_19200  = 19200,
-    HS_SERIAL_RATE_38400  = 38400,
-    HS_SERIAL_RATE_57600  = 57600,
-    HS_SERIAL_RATE_115200 = 115200
 };
 
 HS_PUBLIC int hs_serial_set_attributes(struct hs_handle *h, uint32_t rate, int flags);

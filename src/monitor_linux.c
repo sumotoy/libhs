@@ -114,7 +114,7 @@ static int fill_device_details(hs_device *dev, struct udev_aggregate *agg)
         return r;
 
     errno = 0;
-    buf = udev_device_get_property_value(agg->usb, "ID_VENDOR_ID");
+    buf = udev_device_get_sysattr_value(agg->usb, "idVendor");
     if (!buf)
         return 0;
     dev->vid = (uint16_t)strtoul(buf, NULL, 16);
@@ -122,14 +122,14 @@ static int fill_device_details(hs_device *dev, struct udev_aggregate *agg)
         return 0;
 
     errno = 0;
-    buf = udev_device_get_property_value(agg->usb, "ID_MODEL_ID");
+    buf = udev_device_get_sysattr_value(agg->usb, "idProduct");
     if (!buf)
         return 0;
     dev->pid = (uint16_t)strtoul(buf, NULL, 16);
     if (errno)
         return 0;
 
-    buf = udev_device_get_property_value(agg->usb, "ID_SERIAL_SHORT");
+    buf = udev_device_get_sysattr_value(agg->usb, "serial");
     if (buf) {
         dev->serial = strdup(buf);
         if (!dev->serial)

@@ -116,6 +116,7 @@ HS_PUBLIC hs_descriptor hs_monitor_get_descriptor(const hs_monitor *monitor);
  *
  * This callback will be called from hs_monitor_refresh() when a new device is detected or
  * a device is removed. In the callback, use hs_device_get_status() to distinguish the two.
+ *
  * See hs_monitor_callback_func() for more information.
  *
  * You can unregister callbacks using hs_monitor_deregister_callback(), use the callback ID
@@ -167,6 +168,7 @@ HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
  *
  * The device list is refreshed when the monitor is created, and when hs_monitor_refresh() is
  * called. This function simply uses the monitor's internal device list.
+ *
  * See hs_monitor_callback_func() for more information about the callback.
  *
  * @param monitor Device monitor.
@@ -175,7 +177,7 @@ HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
  * @return This function returns 0 on success, or a negative @ref hs_err code. When the callback
  *     returns a non-zero value, the enumeration is interrupted and the value is returned.
  *
- * @sa hs_monitor_refresh() to refresh the device list.
+ * @sa hs_monitor_refresh()
  * @sa hs_monitor_callback_func()
  */
 HS_PUBLIC int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);

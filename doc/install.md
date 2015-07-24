@@ -19,11 +19,11 @@ on Windows, but you can also use [Qt Creator](https://www.qt.io/download/).
 ### Using CMake
 
 Open a console in the project directory and execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 mkdir -p build/win32 && cd build/win32
 cmake ../..
 make
-```
+~~~~~~~~~~~~~~~~~~
 
 Build on Linux {#install_linux}
 ==============
@@ -35,29 +35,29 @@ Dependencies
 ------------
 
 To install the dependencies on _Debian or Ubuntu_ execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 sudo apt-get install build-essential libudev-dev cmake
-```
+~~~~~~~~~~~~~~~~~~
 
 On _Arch Linux_ you can do so (as root):
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 pacman -S --needed base-devel udev cmake
-```
+~~~~~~~~~~~~~~~~~~
 
 Compilation
 -----------
 
 Open the project directory in a terminal and execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 mkdir -p build/linux && cd build/linux
 cmake ../..
 make
-```
+~~~~~~~~~~~~~~~~~~
 
 If you want to build a debug library, you have to specify the build type:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 cmake -DCMAKE_BUILD_TYPE=Debug ../..
-```
+~~~~~~~~~~~~~~~~~~
 
 Build on Mac OS X {#install_osx}
 =================
@@ -71,17 +71,17 @@ build libhs. CMake can generate Xcode project files, refer to the relevant docum
 ### Using CMake
 
 Open a console in the project directory and execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 mkdir -p build/darwin && cd build/darwin
 cmake ../..
 make
-```
+~~~~~~~~~~~~~~~~~~
 
 CMake supports universal binaries but does not build them by default. To generate universal
 binaries for i386 and x86_64, use:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 cmake -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" ../..
-```
+~~~~~~~~~~~~~~~~~~
 
 Cross-compile from Linux {#install_cross}
 ========================
@@ -92,22 +92,22 @@ Another option is to cross-compile the windows library from Linux. You need to i
 first.
 
 On *Debian and Ubuntu*, install cmake and mingw-w64:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 sudo apt-get install cmake mingw-w64
-```
+~~~~~~~~~~~~~~~~~~
 
 If you use *Arch Linux*, execute (as root):
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 pacman -S --needed cmake mingw-w64-toolchain
-```
+~~~~~~~~~~~~~~~~~~
 
 You can then use the appropriate toolchain file provided in the contrib/cmake directory. Open
 the project directory in a console and execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 mkdir -p build/win32 && cd build/win32
 cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/i686-w64-mingw32.cmake ../..
 make
-```
+~~~~~~~~~~~~~~~~~~
 
 ### Using osxcross (for Mac OS X)
 
@@ -115,14 +115,14 @@ You need to install [osxcross](https://github.com/tpoechtrager/osxcross).
 
 Open a terminal and load the OSX environment (using osxcross-env). Go to the project directory
 and execute:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 mkdir -p build/darwin && cd build/darwin
 cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/x86_64-darwin-clang.cmake ../..
 make
-```
+~~~~~~~~~~~~~~~~~~
 
 You can also make universal binaries under Linux. To build one with i386 and x86_64
 binaries, use:
-```bash
+~~~~~~~~~~~~~~~~~~{.sh}
 cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/x86_64-darwin-clang.cmake -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" ../..
-```
+~~~~~~~~~~~~~~~~~~

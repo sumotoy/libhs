@@ -86,31 +86,31 @@ $(document).ready(function(){initNavTree('hid_8h_source.html','');});
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;HS_BEGIN_C</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">struct </span>hs_handle;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="group__hid.html">   44</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a> {</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">   46</a></span>&#160;    uint16_t <a class="code" href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">usage_page</a>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">   48</a></span>&#160;    uint16_t <a class="code" href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">usage</a>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;} <a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__hid.html#gaaef6b9023c1ff6e549c557cab579b28a">hs_hid_parse_descriptor</a>(<span class="keyword">struct</span> hs_handle *h, <a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a> *desc);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga307a73b42488886cabaf068dac02c499">hs_hid_read</a>(<span class="keyword">struct</span> hs_handle *h, uint8_t *buf, <span class="keywordtype">size_t</span> size, <span class="keywordtype">int</span> timeout);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga6bbc2bdac0fb5aa4d38e1fd37efbc67e">hs_hid_write</a>(<span class="keyword">struct</span> hs_handle *h, <span class="keyword">const</span> uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga8ec0f9007a808df011370e10dcd163c1">hs_hid_get_feature_report</a>(hs_handle *h, uint8_t report_id, uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga7327280d80d7fae54c29b5c66be49fed">hs_hid_send_feature_report</a>(<span class="keyword">struct</span> hs_handle *h, <span class="keyword">const</span> uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;HS_END_C</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="group__hid_html_strucths__hid__descriptor"><div class="ttname"><a href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a></div><div class="ttdoc">Structure representing a parsed HID descriptor. </div><div class="ttdef"><b>Definition:</b> hid.h:44</div></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">struct </span>hs_handle;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="group__hid.html">   45</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a> {</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">   47</a></span>&#160;    uint16_t <a class="code" href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">usage_page</a>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">   49</a></span>&#160;    uint16_t <a class="code" href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">usage</a>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} <a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__hid.html#gaaef6b9023c1ff6e549c557cab579b28a">hs_hid_parse_descriptor</a>(<span class="keyword">struct</span> hs_handle *h, <a class="code" href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a> *desc);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga307a73b42488886cabaf068dac02c499">hs_hid_read</a>(<span class="keyword">struct</span> hs_handle *h, uint8_t *buf, <span class="keywordtype">size_t</span> size, <span class="keywordtype">int</span> timeout);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga6bbc2bdac0fb5aa4d38e1fd37efbc67e">hs_hid_write</a>(<span class="keyword">struct</span> hs_handle *h, <span class="keyword">const</span> uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga8ec0f9007a808df011370e10dcd163c1">hs_hid_get_feature_report</a>(hs_handle *h, uint8_t report_id, uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;HS_PUBLIC ssize_t <a class="code" href="group__hid.html#ga7327280d80d7fae54c29b5c66be49fed">hs_hid_send_feature_report</a>(<span class="keyword">struct</span> hs_handle *h, <span class="keyword">const</span> uint8_t *buf, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;HS_END_C</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="group__hid_html_strucths__hid__descriptor"><div class="ttname"><a href="group__hid.html#strucths__hid__descriptor">hs_hid_descriptor</a></div><div class="ttdoc">Structure representing a parsed HID descriptor. </div><div class="ttdef"><b>Definition:</b> hid.h:45</div></div>
 <div class="ttc" id="group__hid_html_ga8ec0f9007a808df011370e10dcd163c1"><div class="ttname"><a href="group__hid.html#ga8ec0f9007a808df011370e10dcd163c1">hs_hid_get_feature_report</a></div><div class="ttdeci">ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size)</div><div class="ttdoc">Get a feature report from the device. </div></div>
-<div class="ttc" id="group__hid_html_ac8b2e32d71123eeaeaea59873ea04389"><div class="ttname"><a href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">hs_hid_descriptor::usage</a></div><div class="ttdeci">uint16_t usage</div><div class="ttdef"><b>Definition:</b> hid.h:48</div></div>
+<div class="ttc" id="group__hid_html_ac8b2e32d71123eeaeaea59873ea04389"><div class="ttname"><a href="group__hid.html#ac8b2e32d71123eeaeaea59873ea04389">hs_hid_descriptor::usage</a></div><div class="ttdeci">uint16_t usage</div><div class="ttdef"><b>Definition:</b> hid.h:49</div></div>
 <div class="ttc" id="group__hid_html_ga7327280d80d7fae54c29b5c66be49fed"><div class="ttname"><a href="group__hid.html#ga7327280d80d7fae54c29b5c66be49fed">hs_hid_send_feature_report</a></div><div class="ttdeci">ssize_t hs_hid_send_feature_report(struct hs_handle *h, const uint8_t *buf, size_t size)</div><div class="ttdoc">Send a feature report to the device. </div></div>
 <div class="ttc" id="group__hid_html_ga6bbc2bdac0fb5aa4d38e1fd37efbc67e"><div class="ttname"><a href="group__hid.html#ga6bbc2bdac0fb5aa4d38e1fd37efbc67e">hs_hid_write</a></div><div class="ttdeci">ssize_t hs_hid_write(struct hs_handle *h, const uint8_t *buf, size_t size)</div><div class="ttdoc">Send an output report to the device. </div></div>
 <div class="ttc" id="group__hid_html_ga307a73b42488886cabaf068dac02c499"><div class="ttname"><a href="group__hid.html#ga307a73b42488886cabaf068dac02c499">hs_hid_read</a></div><div class="ttdeci">ssize_t hs_hid_read(struct hs_handle *h, uint8_t *buf, size_t size, int timeout)</div><div class="ttdoc">Read an input report from the device. </div></div>
-<div class="ttc" id="group__hid_html_a4b2fa21398658f5726a5466fb3d20eac"><div class="ttname"><a href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">hs_hid_descriptor::usage_page</a></div><div class="ttdeci">uint16_t usage_page</div><div class="ttdef"><b>Definition:</b> hid.h:46</div></div>
+<div class="ttc" id="group__hid_html_a4b2fa21398658f5726a5466fb3d20eac"><div class="ttname"><a href="group__hid.html#a4b2fa21398658f5726a5466fb3d20eac">hs_hid_descriptor::usage_page</a></div><div class="ttdeci">uint16_t usage_page</div><div class="ttdef"><b>Definition:</b> hid.h:47</div></div>
 <div class="ttc" id="group__hid_html_gaaef6b9023c1ff6e549c557cab579b28a"><div class="ttname"><a href="group__hid.html#gaaef6b9023c1ff6e549c557cab579b28a">hs_hid_parse_descriptor</a></div><div class="ttdeci">int hs_hid_parse_descriptor(struct hs_handle *h, hs_hid_descriptor *desc)</div><div class="ttdoc">Parse the report descriptor from the device. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('hid_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5a7b6342532dea88dfde2bc79b8f4aca.html">hs</a></li><li class="navelem"><b>hid.h</b></li>
-    <li class="footer">Generated on Fri Jul 24 2015 15:44:54 for libhs by
+    <li class="footer">Generated on Fri Jul 24 2015 16:25:24 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

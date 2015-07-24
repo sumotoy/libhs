@@ -96,93 +96,93 @@ $(document).ready(function(){initNavTree('common_8h_source.html','');});
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;HS_BEGIN_C</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="group__misc.html#ga28f92c4d1e1785c7fc653ee1cec7c35d">   56</a></span>&#160;<span class="preprocessor">#define HS_VERSION 900</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="group__misc.html#ga523c656c82be06903d607e2dbb88e3d1">   64</a></span>&#160;<span class="preprocessor">#define HS_VERSION_STRING &quot;0.9.0&quot;</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#if defined(__GNUC__)</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">    #define HS_PUBLIC __attribute__((__visibility__(&quot;default&quot;)))</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">    #ifdef __MINGW_PRINTF_FORMAT</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">        #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt, first)))</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">    #else</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">        #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__printf__, fmt, first)))</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">    #endif</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#elif _MSC_VER &gt;= 1900</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">    #ifdef _HS_UTIL_H</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">        #define HS_PUBLIC __declspec(dllexport)</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">    #else</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">        #define HS_PUBLIC __declspec(dllimport)</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">    #endif</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">    #define HS_PRINTF_FORMAT(fmt, first)</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// HAVE_SSIZE_T is used this way by other projects</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">    #ifndef HAVE_SSIZE_T</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">        #define HAVE_SSIZE_T</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">        #ifdef _WIN64</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">typedef</span> __int64 ssize_t;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">        #else</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">long</span> ssize_t;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">        #endif</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">    #endif</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">    #error &quot;This compiler is not supported&quot;</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#if defined(DOXYGEN)</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno"><a class="line" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">  108</a></span>&#160;<span class="keyword">typedef</span> _platform_specific_ <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#elif defined(_WIN32)</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">void</span> *<a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>; <span class="comment">// HANDLE</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">int</span> <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">  119</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> <a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> {</div>
-<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">  121</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">HS_ERROR_MEMORY</a>        = -1,</div>
-<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">  123</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">HS_ERROR_NOT_FOUND</a>     = -2,</div>
-<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">  125</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">HS_ERROR_ACCESS</a>        = -3,</div>
-<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">  127</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">HS_ERROR_IO</a>            = -4,</div>
-<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">  129</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">HS_ERROR_SYSTEM</a>        = -5,</div>
-<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">  131</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">HS_ERROR_INVALID</a>       = -6</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;} <a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a>;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">void</span> hs_error_func(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err, <span class="keyword">const</span> <span class="keywordtype">char</span> *msg, <span class="keywordtype">void</span> *udata);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;HS_PUBLIC uint32_t <a class="code" href="group__misc.html#ga9cb513f4b03c049c9a76e7e99b447937">hs_version</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;HS_PUBLIC <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="group__misc.html#gab453230a4cc15e32755d9990c4cbc593">hs_version_string</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#gab186b859eba142522184d17e295644e0">hs_error_redirect</a>(hs_error_func *f, <span class="keywordtype">void</span> *udata);</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#ga295f20d33fcb6ead1fa415a23992fc48">hs_error_mask</a>(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err);</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#ga295dd6900cb190f2041712747c1d3203">hs_error_unmask</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__misc.html#gadf53785ece9efb85de0af39a61ac12b5">hs_error</a>(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err, <span class="keyword">const</span> <span class="keywordtype">char</span> *fmt, ...) HS_PRINTF_FORMAT(2, 3);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;HS_END_C</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">HS_ERROR_MEMORY</a></div><div class="ttdef"><b>Definition:</b> common.h:121</div></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">HS_ERROR_ACCESS</a></div><div class="ttdef"><b>Definition:</b> common.h:125</div></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">HS_ERROR_NOT_FOUND</a></div><div class="ttdef"><b>Definition:</b> common.h:123</div></div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="group__misc.html#ga28f92c4d1e1785c7fc653ee1cec7c35d">   57</a></span>&#160;<span class="preprocessor">#define HS_VERSION 900</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="group__misc.html#ga523c656c82be06903d607e2dbb88e3d1">   65</a></span>&#160;<span class="preprocessor">#define HS_VERSION_STRING &quot;0.9.0&quot;</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#if defined(__GNUC__)</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">    #define HS_PUBLIC __attribute__((__visibility__(&quot;default&quot;)))</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">    #ifdef __MINGW_PRINTF_FORMAT</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">        #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt, first)))</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">    #else</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">        #define HS_PRINTF_FORMAT(fmt, first) __attribute__((__format__(__printf__, fmt, first)))</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">    #endif</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#elif _MSC_VER &gt;= 1900</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">    #ifdef _HS_UTIL_H</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">        #define HS_PUBLIC __declspec(dllexport)</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">    #else</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">        #define HS_PUBLIC __declspec(dllimport)</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">    #endif</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">    #define HS_PRINTF_FORMAT(fmt, first)</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">// HAVE_SSIZE_T is used this way by other projects</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">    #ifndef HAVE_SSIZE_T</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">        #define HAVE_SSIZE_T</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">        #ifdef _WIN64</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">typedef</span> __int64 ssize_t;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">        #else</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">long</span> ssize_t;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">        #endif</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">    #endif</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">    #error &quot;This compiler is not supported&quot;</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#if defined(DOXYGEN)</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">  109</a></span>&#160;<span class="keyword">typedef</span> _platform_specific_ <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#elif defined(_WIN32)</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">void</span> *<a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>; <span class="comment">// HANDLE</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">int</span> <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a>;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">  120</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> <a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> {</div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">  122</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">HS_ERROR_MEMORY</a>        = -1,</div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">  124</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">HS_ERROR_NOT_FOUND</a>     = -2,</div>
+<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">  126</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">HS_ERROR_ACCESS</a>        = -3,</div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">  128</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">HS_ERROR_IO</a>            = -4,</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">  130</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">HS_ERROR_SYSTEM</a>        = -5,</div>
+<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">  132</a></span>&#160;    <a class="code" href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">HS_ERROR_INVALID</a>       = -6</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;} <a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">void</span> hs_error_func(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err, <span class="keyword">const</span> <span class="keywordtype">char</span> *msg, <span class="keywordtype">void</span> *udata);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;HS_PUBLIC uint32_t <a class="code" href="group__misc.html#ga9cb513f4b03c049c9a76e7e99b447937">hs_version</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;HS_PUBLIC <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="group__misc.html#gab453230a4cc15e32755d9990c4cbc593">hs_version_string</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#gab186b859eba142522184d17e295644e0">hs_error_redirect</a>(hs_error_func *f, <span class="keywordtype">void</span> *udata);</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#ga295f20d33fcb6ead1fa415a23992fc48">hs_error_mask</a>(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err);</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#ga295dd6900cb190f2041712747c1d3203">hs_error_unmask</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__misc.html#gadf53785ece9efb85de0af39a61ac12b5">hs_error</a>(<a class="code" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> err, <span class="keyword">const</span> <span class="keywordtype">char</span> *fmt, ...) HS_PRINTF_FORMAT(2, 3);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;HS_END_C</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0a0410182743d83784cea0cfcc36700e">HS_ERROR_MEMORY</a></div><div class="ttdef"><b>Definition:</b> common.h:122</div></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29bac2eb59dde4e04baa25f9b6b77d39219d">HS_ERROR_ACCESS</a></div><div class="ttdef"><b>Definition:</b> common.h:126</div></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba7a96460879b04fafe9d7d245d8d79364">HS_ERROR_NOT_FOUND</a></div><div class="ttdef"><b>Definition:</b> common.h:124</div></div>
 <div class="ttc" id="group__misc_html_ga295f20d33fcb6ead1fa415a23992fc48"><div class="ttname"><a href="group__misc.html#ga295f20d33fcb6ead1fa415a23992fc48">hs_error_mask</a></div><div class="ttdeci">void hs_error_mask(hs_err err)</div><div class="ttdoc">Mask an error code. </div></div>
-<div class="ttc" id="group__misc_html_gaf987ed07669903194c9f28386fc0c29b"><div class="ttname"><a href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a></div><div class="ttdeci">hs_err</div><div class="ttdoc">libhs error codes. </div><div class="ttdef"><b>Definition:</b> common.h:119</div></div>
+<div class="ttc" id="group__misc_html_gaf987ed07669903194c9f28386fc0c29b"><div class="ttname"><a href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a></div><div class="ttdeci">hs_err</div><div class="ttdoc">libhs error codes. </div><div class="ttdef"><b>Definition:</b> common.h:120</div></div>
 <div class="ttc" id="group__misc_html_gab453230a4cc15e32755d9990c4cbc593"><div class="ttname"><a href="group__misc.html#gab453230a4cc15e32755d9990c4cbc593">hs_version_string</a></div><div class="ttdeci">const char * hs_version_string(void)</div><div class="ttdoc">Run-time libhs version string. </div></div>
 <div class="ttc" id="group__misc_html_gadf53785ece9efb85de0af39a61ac12b5"><div class="ttname"><a href="group__misc.html#gadf53785ece9efb85de0af39a61ac12b5">hs_error</a></div><div class="ttdeci">int hs_error(hs_err err, const char *fmt,...)</div><div class="ttdoc">Call the error message handler with a printf-formatted message. </div></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">HS_ERROR_SYSTEM</a></div><div class="ttdef"><b>Definition:</b> common.h:129</div></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba5458ec338aaf48925bb7851c415d41db">HS_ERROR_SYSTEM</a></div><div class="ttdef"><b>Definition:</b> common.h:130</div></div>
 <div class="ttc" id="group__misc_html_ga295dd6900cb190f2041712747c1d3203"><div class="ttname"><a href="group__misc.html#ga295dd6900cb190f2041712747c1d3203">hs_error_unmask</a></div><div class="ttdeci">void hs_error_unmask(void)</div><div class="ttdoc">Unmask the last masked error code. </div></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">HS_ERROR_IO</a></div><div class="ttdef"><b>Definition:</b> common.h:127</div></div>
-<div class="ttc" id="group__misc_html_ga9fa7e0b22e44f003eac46a8b1d911793"><div class="ttname"><a href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a></div><div class="ttdeci">_platform_specific_ hs_descriptor</div><div class="ttdoc">Type representing an OS descriptor/handle. </div><div class="ttdef"><b>Definition:</b> common.h:108</div></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba0cdec99f330f67c53db313b40a4432d7">HS_ERROR_IO</a></div><div class="ttdef"><b>Definition:</b> common.h:128</div></div>
+<div class="ttc" id="group__misc_html_ga9fa7e0b22e44f003eac46a8b1d911793"><div class="ttname"><a href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a></div><div class="ttdeci">_platform_specific_ hs_descriptor</div><div class="ttdoc">Type representing an OS descriptor/handle. </div><div class="ttdef"><b>Definition:</b> common.h:109</div></div>
 <div class="ttc" id="group__misc_html_ga9cb513f4b03c049c9a76e7e99b447937"><div class="ttname"><a href="group__misc.html#ga9cb513f4b03c049c9a76e7e99b447937">hs_version</a></div><div class="ttdeci">uint32_t hs_version(void)</div><div class="ttdoc">Run-time libhs version. </div></div>
 <div class="ttc" id="group__misc_html_gab186b859eba142522184d17e295644e0"><div class="ttname"><a href="group__misc.html#gab186b859eba142522184d17e295644e0">hs_error_redirect</a></div><div class="ttdeci">void hs_error_redirect(hs_error_func *f, void *udata)</div><div class="ttdoc">Change the error message handler. </div></div>
-<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">HS_ERROR_INVALID</a></div><div class="ttdef"><b>Definition:</b> common.h:131</div></div>
+<div class="ttc" id="group__misc_html_ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf"><div class="ttname"><a href="group__misc.html#ggaf987ed07669903194c9f28386fc0c29ba4b1792bc59a279318b5ac668869eecdf">HS_ERROR_INVALID</a></div><div class="ttdef"><b>Definition:</b> common.h:132</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5a7b6342532dea88dfde2bc79b8f4aca.html">hs</a></li><li class="navelem"><b>common.h</b></li>
-    <li class="footer">Generated on Fri Jul 24 2015 15:44:54 for libhs by
+    <li class="footer">Generated on Fri Jul 24 2015 16:25:24 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

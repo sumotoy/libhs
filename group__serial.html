@@ -58,6 +58,9 @@ $(document).ready(function(){initNavTree('group__serial.html','');});
 <div class="title">Serial device I/O</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Send and receive bytes to and from serial devices.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -125,6 +128,7 @@ Functions</h2></td></tr>
 <tr class="separator:ga40901c447908fcb5bd6cf07fbf48a7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>Send and receive bytes to and from serial devices. </p>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="gab185174fa91361150af172ff606a6183"></a>
 <div class="memitem">
@@ -202,13 +206,13 @@ Functions</h2></td></tr>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__serial.html#gac0a6a92561410a9055b7b3e7c7a1923b" title="Set the parameters associated with a serial device. ">hs_serial_set_attributes()</a> </dd></dl>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ggad01c27b65e05dbd2e6097d4fb4a42b12a97c9bb454c3a26f9794aca5bcf23f5bb"></a>HS_SERIAL_CSIZE_7BITS&#160;</td><td class="fielddoc">
-<p>Use 7 bits in the bytes transmitted and received. </p>
+<p>Use 7 bits in the bytes transmitted and received, instead of 8 bytes. </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="ggad01c27b65e05dbd2e6097d4fb4a42b12a2021393af3c5e572af35e006c8ba19a5"></a>HS_SERIAL_CSIZE_6BITS&#160;</td><td class="fielddoc">
-<p>Use 6 bits in the bytes transmitted and received. </p>
+<p>Use 6 bits in the bytes transmitted and received, instead of 8 bytes. </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="ggad01c27b65e05dbd2e6097d4fb4a42b12a0440cf8ce462fdd028623c0fe8d58051"></a>HS_SERIAL_CSIZE_5BITS&#160;</td><td class="fielddoc">
-<p>Use 5 bits in the bytes transmitted and received. </p>
+<p>Use 5 bits in the bytes transmitted and received, instead of 8 bytes. </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="ggad01c27b65e05dbd2e6097d4fb4a42b12a1be45915447d60d16aae570f0a738354"></a>HS_SERIAL_PARITY_ODD&#160;</td><td class="fielddoc">
 <p>Use an odd scheme for parity, instead of no parity. </p>
@@ -380,7 +384,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 24 2015 15:44:54 for libhs by
+    <li class="footer">Generated on Fri Jul 24 2015 16:25:24 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

@@ -76,57 +76,7 @@ if(WIN32)
     endif()
 endif()
 
-include(CheckSymbolExists)
-check_symbol_exists(stpcpy string.h HAVE_STPCPY)
-check_symbol_exists(asprintf stdio.h HAVE_ASPRINTF)
-add_definitions(-DHAVE_CONFIG_H)
-configure_file(src/config.h.in config.h)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(include)
 
-set(HS_SOURCES include/hs.h
-               include/hs/common.h
-               include/hs/device.h
-               include/hs/hid.h
-               include/hs/monitor.h
-               include/hs/platform.h
-               include/hs/serial.h
-
-               src/common.c
-               src/compat.c
-               src/device.c
-               src/device_priv.h
-               src/htable.c
-               src/list.h
-               src/monitor.c
-               src/monitor_priv.h
-               src/platform.c
-               src/util.h)
-if(WIN32)
-    list(APPEND HS_SOURCES src/device_win32.c
-                           src/device_win32_priv.h
-                           src/hid_win32.c
-                           src/monitor_win32.c
-                           src/platform_win32.c
-                           src/serial_win32.c)
-else()
-    list(APPEND HS_SOURCES src/device_posix.c
-                           src/device_posix_priv.h
-                           src/serial_posix.c)
-
-    if(LINUX)
-        list(APPEND HS_SOURCES src/hid_linux.c
-                               src/monitor_linux.c
-                               src/platform_posix.c)
-    elseif(APPLE)
-        list(APPEND HS_SOURCES src/hid_darwin.c
-                               src/monitor_darwin.c
-                               src/platform_darwin.c)
-    else()
-        message(FATAL_ERROR "Unsupported platform")
-    endif()
-endif()
-
-add_library(hs ${HS_SOURCES})
-target_link_libraries(hs ${HS_LINK_LIBRARIES})
+add_subdirectory(src)

@@ -175,6 +175,7 @@ HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
  * @return This function returns 0 on success, or a negative @ref hs_err code. When the callback
  *     returns a non-zero value, the enumeration is interrupted and the value is returned.
  *
+ * @sa hs_monitor_refresh() to refresh the device list.
  * @sa hs_monitor_callback_func()
  */
 HS_PUBLIC int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);

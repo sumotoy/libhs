@@ -13,4 +13,5 @@ Pre-built binaries are available for Windows (MSVC 2015 and MinGW-w64) and Mac O
 
 To get started you can:
 - [download or build libhs](@ref install)
+- [look at the examples](https://github.com/Koromix/libhs/tree/master/examples)
 - [consult the reference documentation](modules.html)

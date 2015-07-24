@@ -87,55 +87,79 @@ $(document).ready(function(){initNavTree('platform_8h_source.html','');});
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;HS_BEGIN_C</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">enum</span> hs_win32_release {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    HS_WIN32_VERSION_2000 = 500,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    HS_WIN32_VERSION_XP = 501,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    HS_WIN32_VERSION_2003 = 502,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    HS_WIN32_VERSION_VISTA = 600,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    HS_WIN32_VERSION_7 = 601,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    HS_WIN32_VERSION_8 = 602,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    HS_WIN32_VERSION_8_1 = 603,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    HS_WIN32_VERSION_10 = 1000</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="strucths__descriptor__set.html">   45</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a> {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    hs_descriptor desc[64];</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">int</span> <span class="keywordtype">id</span>[64];</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} <a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;HS_PUBLIC uint64_t hs_millis(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> hs_adjust_timeout(<span class="keywordtype">int</span> timeout, uint64_t start);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#ifdef __linux__</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;HS_PUBLIC uint32_t hs_linux_version(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;HS_PUBLIC <span class="keyword">const</span> <span class="keywordtype">char</span> *hs_win32_strerror(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> err);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;HS_PUBLIC uint32_t hs_win32_version(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> hs_descriptor_set_clear(<a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a> *set);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> hs_descriptor_set_add(<a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a> *set, hs_descriptor desc, <span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> hs_descriptor_set_remove(<a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a> *set, <span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> hs_poll(<span class="keyword">const</span> <a class="code" href="strucths__descriptor__set.html">hs_descriptor_set</a> *set, <span class="keywordtype">int</span> timeout);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;HS_END_C</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="strucths__descriptor__set_html"><div class="ttname"><a href="strucths__descriptor__set.html">hs_descriptor_set</a></div><div class="ttdef"><b>Definition:</b> platform.h:45</div></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="group__misc.html#ga707d7a2b9eb02f4303f14fc6cf1a5ff8">   37</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__misc.html#ga707d7a2b9eb02f4303f14fc6cf1a5ff8">hs_win32_release</a> {</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a5b58d489ac6e21a2e259d5f5f2c11eb7">   39</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a5b58d489ac6e21a2e259d5f5f2c11eb7">HS_WIN32_VERSION_2000</a> = 500,</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aeea007a19767e3f128d74ed8fe80da17">   41</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aeea007a19767e3f128d74ed8fe80da17">HS_WIN32_VERSION_XP</a> = 501,</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aebbdf2236a117c8228caa23d59d89de9">   43</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aebbdf2236a117c8228caa23d59d89de9">HS_WIN32_VERSION_2003</a> = 502,</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8afd6da2362a67e62e0b45fd46169e6ec7">   45</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8afd6da2362a67e62e0b45fd46169e6ec7">HS_WIN32_VERSION_VISTA</a> = 600,</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a033520f668968eec180085281e8508e2">   47</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a033520f668968eec180085281e8508e2">HS_WIN32_VERSION_7</a> = 601,</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aa6a8628995f3e3dffcd0f0f929f18dd4">   49</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aa6a8628995f3e3dffcd0f0f929f18dd4">HS_WIN32_VERSION_8</a> = 602,</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a9180357f82d8b07499e0eccb163168a0">   51</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a9180357f82d8b07499e0eccb163168a0">HS_WIN32_VERSION_8_1</a> = 603,</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a367994360541b46f73330d21c5a066c5">   53</a></span>&#160;    <a class="code" href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a367994360541b46f73330d21c5a066c5">HS_WIN32_VERSION_10</a> = 1000</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;};</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="group__misc.html">   74</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a> {</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="group__misc.html#a9f83a295b8ef5134c90b0e568c3776f3">   76</a></span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="group__misc.html#a9f83a295b8ef5134c90b0e568c3776f3">count</a>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="group__misc.html#a4b63a56d0725be9d07e58c861d2c2636">   79</a></span>&#160;    <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a> <a class="code" href="group__misc.html#a4b63a56d0725be9d07e58c861d2c2636">desc</a>[64];</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="group__misc.html#a4514d19a8e4cbec25fdadd7faaa5fff0">   81</a></span>&#160;    <span class="keywordtype">int</span> <span class="keywordtype">id</span>[64];</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;} <a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;HS_PUBLIC uint64_t <a class="code" href="group__misc.html#gaafafebd2e1dded0a279bc22003934253">hs_millis</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__misc.html#gaa41d2322c14a1a759efb03ba26efc61d">hs_adjust_timeout</a>(<span class="keywordtype">int</span> timeout, uint64_t start);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#ifdef __linux__</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;HS_PUBLIC uint32_t <a class="code" href="group__misc.html#ga448a59497504c07f4615db2dd8eb2243">hs_linux_version</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;HS_PUBLIC <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="group__misc.html#gaf1d11f8078c7525d1bbf6079674c1df0">hs_win32_strerror</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> err);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;HS_PUBLIC uint32_t <a class="code" href="group__misc.html#ga68e54e9b77f4dd37dbfedf43e3d27c99">hs_win32_version</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#gac14acfee8e83b28a6d1cebf76b4fc3cd">hs_descriptor_set_clear</a>(<a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a> *set);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#gab35bb386ef5f65267b74b8d47ecb4dc2">hs_descriptor_set_add</a>(<a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a> *set, <a class="code" href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a> desc, <span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;HS_PUBLIC <span class="keywordtype">void</span> <a class="code" href="group__misc.html#ga8c59ee99ffead8f692b52073dfbd1ce3">hs_descriptor_set_remove</a>(<a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a> *set, <span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;HS_PUBLIC <span class="keywordtype">int</span> <a class="code" href="group__misc.html#ga20bb0bc90291e23ad78a0095f810267d">hs_poll</a>(<span class="keyword">const</span> <a class="code" href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a> *set, <span class="keywordtype">int</span> timeout);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;HS_END_C</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="group__misc_html_a4b63a56d0725be9d07e58c861d2c2636"><div class="ttname"><a href="group__misc.html#a4b63a56d0725be9d07e58c861d2c2636">hs_descriptor_set::desc</a></div><div class="ttdeci">hs_descriptor desc[64]</div><div class="ttdef"><b>Definition:</b> platform.h:79</div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8a5b58d489ac6e21a2e259d5f5f2c11eb7"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a5b58d489ac6e21a2e259d5f5f2c11eb7">HS_WIN32_VERSION_2000</a></div><div class="ttdef"><b>Definition:</b> platform.h:39</div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8aeea007a19767e3f128d74ed8fe80da17"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aeea007a19767e3f128d74ed8fe80da17">HS_WIN32_VERSION_XP</a></div><div class="ttdef"><b>Definition:</b> platform.h:41</div></div>
+<div class="ttc" id="group__misc_html_gaa41d2322c14a1a759efb03ba26efc61d"><div class="ttname"><a href="group__misc.html#gaa41d2322c14a1a759efb03ba26efc61d">hs_adjust_timeout</a></div><div class="ttdeci">int hs_adjust_timeout(int timeout, uint64_t start)</div><div class="ttdoc">Adjust a timeout over a time period. </div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8afd6da2362a67e62e0b45fd46169e6ec7"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8afd6da2362a67e62e0b45fd46169e6ec7">HS_WIN32_VERSION_VISTA</a></div><div class="ttdef"><b>Definition:</b> platform.h:45</div></div>
+<div class="ttc" id="group__misc_html_gab35bb386ef5f65267b74b8d47ecb4dc2"><div class="ttname"><a href="group__misc.html#gab35bb386ef5f65267b74b8d47ecb4dc2">hs_descriptor_set_add</a></div><div class="ttdeci">void hs_descriptor_set_add(hs_descriptor_set *set, hs_descriptor desc, int id)</div><div class="ttdoc">Add a descriptor to a set. </div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8a033520f668968eec180085281e8508e2"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a033520f668968eec180085281e8508e2">HS_WIN32_VERSION_7</a></div><div class="ttdef"><b>Definition:</b> platform.h:47</div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8aa6a8628995f3e3dffcd0f0f929f18dd4"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aa6a8628995f3e3dffcd0f0f929f18dd4">HS_WIN32_VERSION_8</a></div><div class="ttdef"><b>Definition:</b> platform.h:49</div></div>
+<div class="ttc" id="group__misc_html_ga707d7a2b9eb02f4303f14fc6cf1a5ff8"><div class="ttname"><a href="group__misc.html#ga707d7a2b9eb02f4303f14fc6cf1a5ff8">hs_win32_release</a></div><div class="ttdeci">hs_win32_release</div><div class="ttdoc">Common Windows version numbers. </div><div class="ttdef"><b>Definition:</b> platform.h:37</div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8a367994360541b46f73330d21c5a066c5"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a367994360541b46f73330d21c5a066c5">HS_WIN32_VERSION_10</a></div><div class="ttdef"><b>Definition:</b> platform.h:53</div></div>
+<div class="ttc" id="group__misc_html_gaf1d11f8078c7525d1bbf6079674c1df0"><div class="ttname"><a href="group__misc.html#gaf1d11f8078c7525d1bbf6079674c1df0">hs_win32_strerror</a></div><div class="ttdeci">const char * hs_win32_strerror(unsigned long err)</div><div class="ttdoc">Format an error string using FormatMessage(). </div></div>
+<div class="ttc" id="group__misc_html_ga20bb0bc90291e23ad78a0095f810267d"><div class="ttname"><a href="group__misc.html#ga20bb0bc90291e23ad78a0095f810267d">hs_poll</a></div><div class="ttdeci">int hs_poll(const hs_descriptor_set *set, int timeout)</div><div class="ttdoc">Wait on a descriptor set for readable descriptors. </div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8aebbdf2236a117c8228caa23d59d89de9"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8aebbdf2236a117c8228caa23d59d89de9">HS_WIN32_VERSION_2003</a></div><div class="ttdef"><b>Definition:</b> platform.h:43</div></div>
+<div class="ttc" id="group__misc_html_gac14acfee8e83b28a6d1cebf76b4fc3cd"><div class="ttname"><a href="group__misc.html#gac14acfee8e83b28a6d1cebf76b4fc3cd">hs_descriptor_set_clear</a></div><div class="ttdeci">void hs_descriptor_set_clear(hs_descriptor_set *set)</div><div class="ttdoc">Remove all descriptors from this set. </div></div>
+<div class="ttc" id="group__misc_html_gaafafebd2e1dded0a279bc22003934253"><div class="ttname"><a href="group__misc.html#gaafafebd2e1dded0a279bc22003934253">hs_millis</a></div><div class="ttdeci">uint64_t hs_millis(void)</div><div class="ttdoc">Get time from a monotonic clock. </div></div>
+<div class="ttc" id="group__misc_html_gga707d7a2b9eb02f4303f14fc6cf1a5ff8a9180357f82d8b07499e0eccb163168a0"><div class="ttname"><a href="group__misc.html#gga707d7a2b9eb02f4303f14fc6cf1a5ff8a9180357f82d8b07499e0eccb163168a0">HS_WIN32_VERSION_8_1</a></div><div class="ttdef"><b>Definition:</b> platform.h:51</div></div>
+<div class="ttc" id="group__misc_html_ga448a59497504c07f4615db2dd8eb2243"><div class="ttname"><a href="group__misc.html#ga448a59497504c07f4615db2dd8eb2243">hs_linux_version</a></div><div class="ttdeci">uint32_t hs_linux_version(void)</div><div class="ttdoc">Get the Linux kernel version as a composite decimal number. </div></div>
+<div class="ttc" id="group__misc_html_ga68e54e9b77f4dd37dbfedf43e3d27c99"><div class="ttname"><a href="group__misc.html#ga68e54e9b77f4dd37dbfedf43e3d27c99">hs_win32_version</a></div><div class="ttdeci">uint32_t hs_win32_version(void)</div><div class="ttdoc">Get the Windows version as a composite decimal number. </div></div>
+<div class="ttc" id="group__misc_html_strucths__descriptor__set"><div class="ttname"><a href="group__misc.html#strucths__descriptor__set">hs_descriptor_set</a></div><div class="ttdoc">Descriptor set for cross-platform device polling. </div><div class="ttdef"><b>Definition:</b> platform.h:74</div></div>
+<div class="ttc" id="group__misc_html_ga9fa7e0b22e44f003eac46a8b1d911793"><div class="ttname"><a href="group__misc.html#ga9fa7e0b22e44f003eac46a8b1d911793">hs_descriptor</a></div><div class="ttdeci">_platform_specific_ hs_descriptor</div><div class="ttdoc">Type representing an OS descriptor/handle. </div><div class="ttdef"><b>Definition:</b> common.h:108</div></div>
+<div class="ttc" id="group__misc_html_a9f83a295b8ef5134c90b0e568c3776f3"><div class="ttname"><a href="group__misc.html#a9f83a295b8ef5134c90b0e568c3776f3">hs_descriptor_set::count</a></div><div class="ttdeci">unsigned int count</div><div class="ttdef"><b>Definition:</b> platform.h:76</div></div>
+<div class="ttc" id="group__misc_html_ga8c59ee99ffead8f692b52073dfbd1ce3"><div class="ttname"><a href="group__misc.html#ga8c59ee99ffead8f692b52073dfbd1ce3">hs_descriptor_set_remove</a></div><div class="ttdeci">void hs_descriptor_set_remove(hs_descriptor_set *set, int id)</div><div class="ttdoc">Remove descriptors from a set. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_5a7b6342532dea88dfde2bc79b8f4aca.html">hs</a></li><li class="navelem"><b>platform.h</b></li>
-    <li class="footer">Generated on Fri Jul 24 2015 00:50:22 for libhs by
+    <li class="footer">Generated on Fri Jul 24 2015 15:44:54 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

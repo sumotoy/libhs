@@ -1990,6 +1990,7 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = HS_PUBLIC= \
                          HS_PRINTF_FORMAT(a,b)= \
+                         DOXYGEN \
                          __posix__ \
                          __linux__ \
                          _WIN32 \

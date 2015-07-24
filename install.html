@@ -94,21 +94,21 @@ Cross-compile from Linux </h1>
 <p>Another option is to cross-compile the windows library from Linux. You need to install MinGW-w64 first.</p>
 <p>On <em>Debian and Ubuntu</em>, install cmake and mingw-w64: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;sudo apt-get install cmake mingw-w64</div>
 </div><!-- fragment --><p>If you use <em>Arch Linux</em>, execute (as root): </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;pacman -S --needed cmake mingw-w64-toolchain</div>
-</div><!-- fragment --><p>You can then use the appropriate toolchain file provided in the contrib/cmake directory. Open the project directory in a console and execute: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;mkdir -p build/win32 &amp;&amp; cd build/win32</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/i686-w64-mingw32.cmake ../..</div>
+</div><!-- fragment --><p>You can then use the appropriate toolchain file provided in the cmake directory. Open the project directory in a console and execute: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;mkdir -p build/win32 &amp;&amp; cd build/win32</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../cmake/i686-w64-mingw32.cmake ../..</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;make</div>
 </div><!-- fragment --><h3>Using osxcross (for Mac OS X)</h3>
 <p>You need to install <a href="https://github.com/tpoechtrager/osxcross">osxcross</a>.</p>
 <p>Open a terminal and load the OSX environment (using osxcross-env). Go to the project directory and execute: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;mkdir -p build/darwin &amp;&amp; cd build/darwin</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/x86_64-darwin-clang.cmake ../..</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../cmake/x86_64-darwin-clang.cmake ../..</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;make</div>
-</div><!-- fragment --><p>You can also make universal binaries under Linux. To build one with i386 and x86_64 binaries, use: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../contrib/cmake/x86_64-darwin-clang.cmake -DCMAKE_OSX_ARCHITECTURES=&quot;i386;x86_64&quot; ../..</div>
+</div><!-- fragment --><p>You can also make universal binaries under Linux. To build one with i386 and x86_64 binaries, use: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cmake -DCMAKE_TOOLCHAIN_FILE=../../cmake/x86_64-darwin-clang.cmake -DCMAKE_OSX_ARCHITECTURES=&quot;i386;x86_64&quot; ../..</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 24 2015 16:25:24 for libhs by
+    <li class="footer">Generated on Fri Jul 24 2015 18:47:11 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

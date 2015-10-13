@@ -36,6 +36,7 @@
 #include <usbiodef.h>
 #include <usbioctl.h>
 #include <usbuser.h>
+#include <wchar.h>
 #include "device_priv.h"
 #include "list.h"
 #include "monitor_priv.h"
@@ -359,11 +360,10 @@ cleanup:
     return r;
 }
 
-static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, char **rpath)
+static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uint8_t ports[])
 {
     DEVINST parent;
     char id[256];
-    uint8_t ports[MAX_USB_DEPTH];
     unsigned int depth;
     CONFIGRET cret;
     int r;
@@ -431,21 +431,100 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, cha
         ports[depth - i - 1] = tmp;
     }
 
-    r = build_location_string(ports, depth, rpath);
+    return (int)depth;
+}
+
+static int read_device_properties_hid(hs_device *dev)
+{
+    HANDLE h = NULL;
+    wchar_t wbuf[256];
+    BOOL success;
+    int r;
+
+    r = sscanf(dev->path, "\\\\.\\HID#VID_%04hx&PID_%04hx&MI_%02hhu", &dev->vid, &dev->pid, &dev->iface);
+    if (r < 2) {
+        r = 0;
+        goto cleanup;
+    }
+
+    h = CreateFile(dev->path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+    if (!h) {
+        r = 0;
+        goto cleanup;
+    }
+
+#define READ_PROPERTY(func, dest) \
+        do { \
+            success = func(h, wbuf, sizeof(wbuf)); \
+            if (success) { \
+                r = wide_to_cstring(wbuf, wcslen(wbuf) * sizeof(wchar_t), (dest)); \
+                if (r < 0) \
+                    goto cleanup; \
+            } \
+        } while (0)
+
+    READ_PROPERTY(HidD_GetManufacturerString, &dev->manufacturer);
+    READ_PROPERTY(HidD_GetProductString, &dev->product);
+    READ_PROPERTY(HidD_GetSerialNumberString, &dev->serial);
+
+#undef READ_PROPERTY
+
+    r = 1;
+cleanup:
+    CloseHandle(h);
+    return r;
+}
+
+static int get_string_descriptor(HANDLE h, uint8_t port, uint8_t index, char **rs)
+{
+    struct {
+        USB_DESCRIPTOR_REQUEST req;
+        struct {
+            UCHAR bLength;
+            UCHAR bDescriptorType;
+            WCHAR bString[MAXIMUM_USB_STRING_LENGTH];
+        } desc;
+    } string;
+    DWORD len = 0;
+    char *s;
+    BOOL success;
+    int r;
+
+    memset(&string, 0, sizeof(string));
+    string.req.ConnectionIndex = port;
+    string.req.SetupPacket.wValue = (USHORT)((USB_STRING_DESCRIPTOR_TYPE << 8) | index);
+    string.req.SetupPacket.wIndex = 0x409;
+    string.req.SetupPacket.wLength = sizeof(string.desc);
+
+    success = DeviceIoControl(h, IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION, &string, sizeof(string),
+                              &string, sizeof(string), &len, NULL);
+    if (!success)
+        return 0;
+
+    if (len < 2 || string.desc.bDescriptorType != USB_STRING_DESCRIPTOR_TYPE ||
+            string.desc.bLength != len - sizeof(string.req) || string.desc.bLength % 2 != 0)
+        return 0;
+
+    r = wide_to_cstring(string.desc.bString, len - sizeof(USB_DESCRIPTOR_REQUEST), &s);
     if (r < 0)
         return r;
 
-    return 1;
+    *rs = s;
+    return 0;
 }
 
-static int extract_device_info(DEVINST inst, hs_device *dev)
+static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
 {
     char buf[256];
-    ULONG type, len;
-    DWORD capabilities;
+    char *path = NULL;
+    HANDLE h = NULL;
+    DWORD len;
+    USB_NODE_CONNECTION_INFORMATION_EX *node = NULL;
     CONFIGRET cret;
+    BOOL success;
     int r;
 
+    // Get the device handle corresponding to the USB device or interface
     do {
         cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
         if (cret != CR_SUCCESS)
@@ -456,43 +535,86 @@ static int extract_device_info(DEVINST inst, hs_device *dev)
 
         cret = CM_Get_Parent(&inst, inst, 0);
     } while (cret == CR_SUCCESS);
-    if (cret != CR_SUCCESS)
-        return 0;
+    if (cret != CR_SUCCESS) {
+        r = 0;
+        goto cleanup;
+    }
 
     dev->iface = 0;
     r = sscanf(buf, "USB\\VID_%04hx&PID_%04hx&MI_%02hhu", &dev->vid, &dev->pid, &dev->iface);
-    if (r < 2)
-        return 0;
+    if (r < 2) {
+        r = 0;
+        goto cleanup;
+    }
 
-    // We need the USB device for the serial number, not the interface
+    // Now we need the device handle for the USB hub where the device is plugged
     if (r == 3) {
         cret = CM_Get_Parent(&inst, inst, 0);
-        if (cret != CR_SUCCESS)
-            return 1;
-
-        cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
-        if (cret != CR_SUCCESS)
-            return 1;
-
-        if (strncmp(buf, "USB\\", 4) != 0)
-            return 1;
-    }
-
-    len = sizeof(capabilities);
-    cret = CM_Get_DevNode_Registry_Property(inst, CM_DRP_CAPABILITIES, &type, &capabilities, &len, 0);
-    if (cret != CR_SUCCESS)
-        return 1;
-
-    if (capabilities & CM_DEVCAP_UNIQUEID) {
-        char *ptr = strrchr(buf, '\\');
-        if (ptr) {
-            dev->serial = strdup(ptr + 1);
-            if (!dev->serial)
-                return hs_error(HS_ERROR_MEMORY, NULL);
+        if (cret != CR_SUCCESS) {
+            r = 0;
+            goto cleanup;
         }
     }
+    cret = CM_Get_Parent(&inst, inst, 0);
+    if (cret != CR_SUCCESS) {
+        r = 0;
+        goto cleanup;
+    }
+    cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
+    if (cret != CR_SUCCESS) {
+        r = 0;
+        goto cleanup;
+    }
+    if (strncmp(buf, "USB\\", 4) != 0) {
+        r = 0;
+        goto cleanup;
+    }
 
-    return 1;
+    r = build_device_path(buf, &GUID_DEVINTERFACE_USB_HUB, &path);
+    if (r < 0)
+        goto cleanup;
+
+    h = CreateFile(path, GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    if (!h) {
+        r = 1;
+        goto cleanup;
+    }
+
+    len = sizeof(node) + (sizeof(USB_PIPE_INFO) * 30);
+    node = calloc(1, len);
+    if (!node) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto cleanup;
+    }
+
+    node->ConnectionIndex = port;
+    success = DeviceIoControl(h, IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX, node, len,
+                              node, len, &len, NULL);
+    if (!success) {
+        r = 1;
+        goto cleanup;
+    }
+
+#define READ_STRING_DESCRIPTOR(index, var) \
+        if (index) { \
+            r = get_string_descriptor(h, port, (index), (var)); \
+            if (r < 0) \
+                goto cleanup; \
+        }
+
+    READ_STRING_DESCRIPTOR(node->DeviceDescriptor.iManufacturer, &dev->manufacturer);
+    READ_STRING_DESCRIPTOR(node->DeviceDescriptor.iProduct, &dev->product);
+    READ_STRING_DESCRIPTOR(node->DeviceDescriptor.iSerialNumber, &dev->serial);
+
+#undef READ_STRING_DESCRIPTOR
+
+    r = 1;
+cleanup:
+    free(node);
+    if (h)
+        CloseHandle(h);
+    free(path);
+    return r;
 }
 
 static int get_device_comport(DEVINST inst, char **rnode)
@@ -606,16 +728,6 @@ static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint
         }
     }
 
-    cret = CM_Locate_DevNode(&inst, dev->key, CM_LOCATE_DEVNODE_NORMAL);
-    if (cret != CR_SUCCESS) {
-        r = 0;
-        goto cleanup;
-    }
-
-    r = extract_device_info(inst, dev);
-    if (r < 0)
-        goto cleanup;
-
     r = find_device_node(inst, dev);
     if (r <= 0)
         goto cleanup;
@@ -626,15 +738,26 @@ static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint
          it to this function
        - when a device is added, we know nothing so create_device() has to walk up the device tree
          to identify ports, see resolve_device_location() */
-    if (ports) {
-        r = build_location_string(ports, depth, &dev->location);
-        if (r < 0)
-            goto cleanup;
-    } else {
-        r = resolve_device_location(inst, &monitor->controllers, &dev->location);
+    uint8_t ports2[MAX_USB_DEPTH];
+    if (!ports) {
+        ports = ports2;
+        r = resolve_device_location(inst, &monitor->controllers, ports);
         if (r <= 0)
             goto cleanup;
+        depth = (unsigned int)r;
     }
+
+    if (dev->type == HS_DEVICE_TYPE_HID) {
+        r = read_device_properties_hid(dev);
+    } else {
+        r = read_device_properties(dev, inst, ports[depth - 1]);
+    }
+    if (r <= 0)
+        goto cleanup;
+
+    r = build_location_string(ports, depth, &dev->location);
+    if (r < 0)
+        goto cleanup;
 
     dev->vtable = &_hs_win32_device_vtable;
 

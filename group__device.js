@@ -17,6 +17,8 @@ var group__device =
     [ "hs_device_get_path", "group__device.html#gaea8277a68a276b3930f5b93859556ce3", null ],
     [ "hs_device_get_vid", "group__device.html#ga33d489023164faa15b15e8c8e78ce36c", null ],
     [ "hs_device_get_pid", "group__device.html#ga6cae57be7705ed59ecdad12d7832e882", null ],
+    [ "hs_device_get_manufacturer_string", "group__device.html#ga6dadd8739fa27a6035864910f96aad51", null ],
+    [ "hs_device_get_product_string", "group__device.html#ga9e1a26aeb3df3e4967ffef7c7c1a0a74", null ],
     [ "hs_device_get_serial_number_string", "group__device.html#gacf933ca094982891e029721370c2b848", null ],
     [ "hs_device_get_monitor", "group__device.html#gab6371ee459b4b9dde2695e97230559ef", null ],
     [ "hs_device_open", "group__device.html#ga738d6470f9ea5d1bd0f248dac35cfca3", null ],

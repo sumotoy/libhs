@@ -103,6 +103,12 @@ Device Functions</h2></td></tr>
 <tr class="memitem:ga6cae57be7705ed59ecdad12d7832e882"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__device.html#ga6cae57be7705ed59ecdad12d7832e882">hs_device_get_pid</a> (const hs_device *dev)</td></tr>
 <tr class="memdesc:ga6cae57be7705ed59ecdad12d7832e882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the device product identifier.  <a href="#ga6cae57be7705ed59ecdad12d7832e882">More...</a><br /></td></tr>
 <tr class="separator:ga6cae57be7705ed59ecdad12d7832e882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6dadd8739fa27a6035864910f96aad51"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__device.html#ga6dadd8739fa27a6035864910f96aad51">hs_device_get_manufacturer_string</a> (const hs_device *dev)</td></tr>
+<tr class="memdesc:ga6dadd8739fa27a6035864910f96aad51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the device manufacturer string.  <a href="#ga6dadd8739fa27a6035864910f96aad51">More...</a><br /></td></tr>
+<tr class="separator:ga6dadd8739fa27a6035864910f96aad51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9e1a26aeb3df3e4967ffef7c7c1a0a74"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__device.html#ga9e1a26aeb3df3e4967ffef7c7c1a0a74">hs_device_get_product_string</a> (const hs_device *dev)</td></tr>
+<tr class="memdesc:ga9e1a26aeb3df3e4967ffef7c7c1a0a74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the device product string.  <a href="#ga9e1a26aeb3df3e4967ffef7c7c1a0a74">More...</a><br /></td></tr>
+<tr class="separator:ga9e1a26aeb3df3e4967ffef7c7c1a0a74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacf933ca094982891e029721370c2b848"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__device.html#gacf933ca094982891e029721370c2b848">hs_device_get_serial_number_string</a> (const hs_device *dev)</td></tr>
 <tr class="memdesc:gacf933ca094982891e029721370c2b848"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the device serial number string.  <a href="#gacf933ca094982891e029721370c2b848">More...</a><br /></td></tr>
 <tr class="separator:gacf933ca094982891e029721370c2b848"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -408,6 +414,58 @@ Handle Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga6dadd8739fa27a6035864910f96aad51"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* hs_device_get_manufacturer_string </td>
+          <td>(</td>
+          <td class="paramtype">const hs_device *&#160;</td>
+          <td class="paramname"><em>dev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the device manufacturer string. </p>
+<p>This string is internal to the device object, you must not change or free it. NULL means the device did not report a manufacturer string.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dev</td><td>Device object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns the manufacturer string, or NULL if the device did not report one. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga9e1a26aeb3df3e4967ffef7c7c1a0a74"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* hs_device_get_product_string </td>
+          <td>(</td>
+          <td class="paramtype">const hs_device *&#160;</td>
+          <td class="paramname"><em>dev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the device product string. </p>
+<p>This string is internal to the device object, you must not change or free it. NULL means the device did not report a product string.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dev</td><td>Device object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns the product string, or NULL if the device did not report one. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="gacf933ca094982891e029721370c2b848"></a>
 <div class="memitem">
 <div class="memproto">
@@ -423,13 +481,14 @@ Handle Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the device serial number string. </p>
+<p>This string is internal to the device object, you must not change or free it. NULL means the device did not report a serial number.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dev</td><td>Device object. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns the serial number string, you must not change or free it. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns the serial number string, or NULL if the device did not report one. </dd></dl>
 
 </div>
 </div>
@@ -578,7 +637,7 @@ Handle Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 24 2015 18:47:11 for libhs by
+    <li class="footer">Generated on Tue Oct 13 2015 14:10:40 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

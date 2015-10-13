@@ -241,7 +241,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Register a device event callback. </p>
-<p>This callback will be called from <a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> when a new device is detected or a device is removed. In the callback, use <a class="el" href="group__device.html#gabf57677ab0a1292f5fafd87ff8ee42b9" title="Get the current device status. ">hs_device_get_status()</a> to distinguish the two. See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information.</p>
+<p>This callback will be called from <a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> when a new device is detected or a device is removed. In the callback, use <a class="el" href="group__device.html#gabf57677ab0a1292f5fafd87ff8ee42b9" title="Get the current device status. ">hs_device_get_status()</a> to distinguish the two.</p>
+<p>See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information.</p>
 <p>You can unregister callbacks using <a class="el" href="group__monitor.html#ga439f4f0a7ea840274c07b3e4be9d1b33" title="Deregister a device event callback. ">hs_monitor_deregister_callback()</a>, use the callback ID returned by this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -359,7 +360,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Enumerate the currently known devices. </p>
-<p>The device list is refreshed when the monitor is created, and when <a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> is called. This function simply uses the monitor's internal device list. See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information about the callback.</p>
+<p>The device list is refreshed when the monitor is created, and when <a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> is called. This function simply uses the monitor's internal device list.</p>
+<p>See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information about the callback.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">monitor</td><td>Device monitor. </td></tr>
@@ -369,7 +371,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> code. When the callback returns a non-zero value, the enumeration is interrupted and the value is returned.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> to refresh the <a class="el" href="group__device.html" title="Access device information and open device handles. ">Device handling</a> list. </dd>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> </dd>
 <dd>
 <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> </dd></dl>
 
@@ -380,7 +382,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 24 2015 18:47:11 for libhs by
+    <li class="footer">Generated on Tue Oct 13 2015 14:10:40 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

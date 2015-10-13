@@ -477,8 +477,21 @@ cleanup:
 
 static int get_string_descriptor(HANDLE h, uint8_t port, uint8_t index, char **rs)
 {
+    // A bit ugly, but using USB_DESCRIPTOR_REQUEST directly triggers a C2229 on MSVC
     struct {
-        USB_DESCRIPTOR_REQUEST req;
+        // USB_DESCRIPTOR_REQUEST
+        struct {
+            ULONG  ConnectionIndex;
+            struct {
+                UCHAR bmRequest;
+                UCHAR bRequest;
+                USHORT wValue;
+                USHORT wIndex;
+                USHORT wLength;
+            } SetupPacket;
+        } req;
+
+        // Filled by DeviceIoControl
         struct {
             UCHAR bLength;
             UCHAR bDescriptorType;

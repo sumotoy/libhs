@@ -233,6 +233,9 @@ static int open_hid_device(hs_device *dev, hs_handle **rh)
     h->pipe[0] = -1;
     h->pipe[1] = -1;
 
+    _hs_list_init(&h->reports);
+    _hs_list_init(&h->free_reports);
+
     h->service = IORegistryEntryFromPath(kIOMasterPortDefault, dev->path);
     if (!h->service) {
         r = hs_error(HS_ERROR_NOT_FOUND, "Device '%s' not found", dev->path);
@@ -273,9 +276,6 @@ static int open_hid_device(hs_device *dev, hs_handle **rh)
     }
     fcntl(h->pipe[0], F_SETFL, fcntl(h->pipe[0], F_GETFL, 0) | O_NONBLOCK);
     fcntl(h->pipe[1], F_SETFL, fcntl(h->pipe[1], F_GETFL, 0) | O_NONBLOCK);
-
-    _hs_list_init(&h->reports);
-    _hs_list_init(&h->free_reports);
 
     r = pthread_mutex_init(&h->mutex, NULL);
     if (r < 0) {

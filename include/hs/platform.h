@@ -139,7 +139,7 @@ HS_PUBLIC int hs_adjust_timeout(int timeout, uint64_t start);
  * flavors. Some distributions use heavily-patched builds, with a lot of backported code. When
  * possible, detect functionalities instead.
  *
- * @return This functions returns the version number.
+ * @return This function returns the version number.
  */
 HS_PUBLIC uint32_t hs_linux_version(void);
 #endif
@@ -167,7 +167,7 @@ HS_PUBLIC const char *hs_win32_strerror(unsigned long err);
  *
  * Use this only when testing for functionality is not possible or impractical.
  *
- * @return This functions returns the version number.
+ * @return This function returns the version number.
  */
 HS_PUBLIC uint32_t hs_win32_version(void);
 #endif

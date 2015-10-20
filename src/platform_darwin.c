@@ -25,6 +25,7 @@
 #include "util.h"
 #include <mach/mach_time.h>
 #include <sys/select.h>
+#include <sys/utsname.h>
 #include "hs/platform.h"
 
 uint64_t hs_millis(void)
@@ -81,4 +82,22 @@ restart:
             return set->id[i];
     }
     assert(false);
+}
+
+uint32_t hs_darwin_version(void)
+{
+    static uint32_t version;
+
+    if (version)
+        return version;
+
+    struct utsname name;
+    uint32_t major = 0, minor = 0, release = 0;
+
+    uname(&name);
+    sscanf(name.release, "%u.%u.%u", &major, &minor, &release);
+
+    version = major * 10000 + minor * 100 + release;
+
+    return version;
 }

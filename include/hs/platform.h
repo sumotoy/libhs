@@ -172,6 +172,19 @@ HS_PUBLIC const char *hs_win32_strerror(unsigned long err);
 HS_PUBLIC uint32_t hs_win32_version(void);
 #endif
 
+#ifdef __APPLE__
+/**
+ * @ingroup misc
+ * @brief Get the Darwin version on Apple systems
+ *
+ * The value is MMmmrr (11.4.2 => 110402), see https://en.wikipedia.org/wiki/Darwin_%28operating_system%29
+ * for the corresponding OS X releases.
+ *
+ * @return This function returns the version number.
+ */
+HS_PUBLIC uint32_t hs_darwin_version(void);
+#endif
+
 /** @} */
 
 /**

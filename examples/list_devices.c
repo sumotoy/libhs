@@ -36,17 +36,16 @@ static int device_callback(hs_device *dev, void *udata)
 {
     (void)(udata);
 
-    int event_char = '?';
-    const char *type = "?";
+    const char *event = "?", *type = "?";
 
     /* Use hs_device_get_status() to differenciate between added and removed devices,
        when called from hs_monitor_enumerate() it is always HS_DEVICE_STATUS_ONLINE. */
     switch (hs_device_get_status(dev)) {
     case HS_DEVICE_STATUS_DISCONNECTED:
-        event_char = '-';
+        event = "remove";
         break;
     case HS_DEVICE_STATUS_ONLINE:
-        event_char = '+';
+        event = "add";
         break;
     }
 
@@ -59,8 +58,8 @@ static int device_callback(hs_device *dev, void *udata)
         break;
     }
 
-    printf("%c %s@%"PRIu8" %04"PRIx16":%04"PRIx16" (%s)\n",
-           event_char, hs_device_get_location(dev), hs_device_get_interface_number(dev),
+    printf("%s %s@%"PRIu8" %04"PRIx16":%04"PRIx16" (%s)\n",
+           event, hs_device_get_location(dev), hs_device_get_interface_number(dev),
            hs_device_get_vid(dev), hs_device_get_pid(dev), type);
 
 #define PRINT_PROPERTY(name, prop) \

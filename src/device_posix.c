@@ -25,6 +25,7 @@
 #include "util.h"
 #include <fcntl.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -69,7 +70,7 @@ restart:
         goto error;
     }
 
-#ifdef _APPLE
+#ifdef __APPLE__
     if (dev->type == HS_DEVICE_TYPE_SERIAL)
         ioctl(h->fd, TIOCSDTR);
 #endif

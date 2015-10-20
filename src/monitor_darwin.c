@@ -375,9 +375,16 @@ static int process_darwin_device(hs_monitor *monitor, io_service_t service)
         goto cleanup;
     }
 
-    r = get_ioregistry_value_string(dev_service, CFSTR("USB Serial Number"), &dev->serial);
-    if (r < 0)
-        goto cleanup;
+#define GET_PROPERTY_STRING(service, key, var) \
+        r = get_ioregistry_value_string((service), CFSTR(key), (var)); \
+        if (r < 0) \
+            goto cleanup;
+
+    GET_PROPERTY_STRING(dev_service, "USB Vendor Name", &dev->manufacturer);
+    GET_PROPERTY_STRING(dev_service, "USB Product Name", &dev->product);
+    GET_PROPERTY_STRING(dev_service, "USB Serial Number", &dev->serial);
+
+#undef GET_PROPERTY_STRING
 
     r = resolve_device_location(dev_service, &monitor->controllers, &dev->location);
     if (r <= 0)

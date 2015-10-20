@@ -37,6 +37,7 @@ var group__misc =
     [ "hs_linux_version", "group__misc.html#ga448a59497504c07f4615db2dd8eb2243", null ],
     [ "hs_win32_strerror", "group__misc.html#gaf1d11f8078c7525d1bbf6079674c1df0", null ],
     [ "hs_win32_version", "group__misc.html#ga68e54e9b77f4dd37dbfedf43e3d27c99", null ],
+    [ "hs_darwin_version", "group__misc.html#ga5857a6f54303b35d4f0351daaff2dc72", null ],
     [ "hs_descriptor_set_clear", "group__misc.html#gac14acfee8e83b28a6d1cebf76b4fc3cd", null ],
     [ "hs_descriptor_set_add", "group__misc.html#gab35bb386ef5f65267b74b8d47ecb4dc2", null ],
     [ "hs_descriptor_set_remove", "group__misc.html#ga8c59ee99ffead8f692b52073dfbd1ce3", null ],

@@ -178,7 +178,7 @@ static int find_device_node(hs_device *dev, io_service_t service)
 
         r = get_ioregistry_value_string(service, CFSTR("IOCalloutDevice"), &dev->path);
         if (!r)
-            hs_error(HS_ERROR_SYSTEM, "Serial device does not have property 'IOCalloutDevice'");
+            hs_log(HS_LOG_WARNING, "Serial device does not have property 'IOCalloutDevice'");
     } else if (IOObjectConformsTo(service, "IOHIDDevice")) {
         dev->type = HS_DEVICE_TYPE_HID;
         dev->vtable = &_hs_darwin_hid_vtable;
@@ -187,7 +187,7 @@ static int find_device_node(hs_device *dev, io_service_t service)
         if (!r)
             r = 1;
     } else {
-        hs_error(HS_ERROR_SYSTEM, "Cannot find device node for unknown device entry class");
+        hs_log(HS_LOG_WARNING, "Cannot find device node for unknown device entry class");
         r = 0;
     }
 
@@ -280,7 +280,7 @@ static int resolve_device_location(io_service_t service, _hs_list_head *controll
         }
 
         if (depth == _HS_COUNTOF(ports)) {
-            hs_error(HS_ERROR_SYSTEM, "Excessive USB location depth");
+            hs_log(HS_LOG_WARNING, "Excessive USB location depth, ignoring device");
             r = 0;
             goto cleanup;
         }
@@ -289,14 +289,14 @@ static int resolve_device_location(io_service_t service, _hs_list_head *controll
     } while (service && !IOObjectConformsTo(service, uses_new_usb_stack() ? "AppleUSBHostController" : "IOUSBRootHubDevice"));
 
     if (!depth) {
-        hs_error(HS_ERROR_SYSTEM, "Failed to build USB location");
+        hs_log(HS_LOG_WARNING, "Failed to build USB device location string, ignoring");
         r = 0;
         goto cleanup;
     }
 
     ports[depth] = find_controller(controllers, service);
     if (!ports[depth]) {
-        hs_error(HS_ERROR_SYSTEM, "Cannot find matching USB Host controller");
+        hs_log(HS_LOG_WARNING, "Cannot find matching USB Host controller, ignoring device");
         r = 0;
         goto cleanup;
     }
@@ -358,7 +358,7 @@ static int process_darwin_device(hs_monitor *monitor, io_service_t service)
 #define GET_PROPERTY_NUMBER(service, key, type, var) \
         r = get_ioregistry_value_number(service, CFSTR(key), type, var); \
         if (!r) { \
-            hs_error(HS_ERROR_SYSTEM, "Missing property '%s' for USB device", key); \
+            hs_log(HS_LOG_WARNING, "Missing property '%s', ignoring device", key); \
             goto cleanup; \
         }
 

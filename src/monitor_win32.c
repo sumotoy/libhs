@@ -385,7 +385,7 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
     depth = 0;
     do {
         if (depth == MAX_USB_DEPTH) {
-            hs_error(HS_ERROR_SYSTEM, "Excessive USB location depth");
+            hs_log(HS_LOG_WARNING, "Excessive USB location depth, ignoring device");
             return 0;
         }
 
@@ -788,7 +788,7 @@ static int recurse_devices(hs_monitor *monitor, DEVINST inst, uint8_t ports[], u
     int r;
 
     if (depth == MAX_USB_DEPTH) {
-        hs_error(HS_ERROR_SYSTEM, "Excessive USB location depth");
+        hs_log(HS_LOG_WARNING, "Excessive USB location depth, ignoring device");
         return 0;
     }
 

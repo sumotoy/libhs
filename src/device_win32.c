@@ -134,7 +134,7 @@ static unsigned int __stdcall overlapped_cleanup_thread(void *udata)
 
     success = GetOverlappedResult(h->handle, h->ov, &len, FALSE);
     if (!success && GetLastError() == ERROR_IO_INCOMPLETE) {
-        hs_error(HS_ERROR_SYSTEM, "Cannot stop asynchronous read request, leaking handle and memory");
+        hs_log(HS_LOG_WARNING, "Cannot stop asynchronous read request, leaking handle and memory");
         return 0;
     }
 

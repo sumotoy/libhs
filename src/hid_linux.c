@@ -84,7 +84,7 @@ static void parse_descriptor(hs_handle *h, struct hidraw_report_descriptor *repo
         type &= 0xFC;
 
         if (i + size >= report->size) {
-            hs_error(HS_ERROR_INVALID, "Invalid HID descriptor for device '%s'", h->dev->path);
+            hs_log(HS_LOG_WARNING, "Invalid HID descriptor for device '%s'", h->dev->path);
             return;
         }
 

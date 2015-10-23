@@ -30,7 +30,7 @@ static void default_handler(hs_log_level level, const char *msg, void *udata);
 static hs_log_func *handler = default_handler;
 static void *handler_udata = NULL;
 
-static hs_err mask[32];
+static hs_error_code mask[32];
 static unsigned int mask_count = 0;
 
 uint32_t hs_version(void)
@@ -48,7 +48,7 @@ static const char *generic_message(int err)
     if (err >= 0)
         return "Success";
 
-    switch ((hs_err)err) {
+    switch ((hs_error_code)err) {
     case HS_ERROR_MEMORY:
         return "Memory error";
     case HS_ERROR_NOT_FOUND:
@@ -89,7 +89,7 @@ void hs_log_redirect(hs_log_func *f, void *udata)
     }
 }
 
-void hs_error_mask(hs_err err)
+void hs_error_mask(hs_error_code err)
 {
     assert(mask_count < _HS_COUNTOF(mask));
 
@@ -123,7 +123,7 @@ void hs_log(hs_log_level level, const char *fmt, ...)
     va_end(ap);
 }
 
-int hs_error(hs_err err, const char *fmt, ...)
+int hs_error(hs_error_code err, const char *fmt, ...)
 {
     va_list ap;
 

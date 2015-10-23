@@ -59,7 +59,7 @@ typedef struct hs_hid_descriptor {
  * @param      h    Device handle.
  * @param[out] desc A pointer to a hs_hid_descriptor structure that receives the parsed
  *     descriptor information.
- * @return This function returns 0 on success, or a negative @ref hs_err code.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value.
  *
  * @sa hs_hid_descriptor
  */
@@ -81,7 +81,7 @@ HS_PUBLIC int hs_hid_parse_descriptor(struct hs_handle *h, hs_hid_descriptor *de
  * @param      timeout Timeout in milliseconds, or -1 to block indefinitely.
  *
  * @return This function returns the size of the report in bytes + 1 (report ID). It
- *     returns 0 on timeout, or a negative @ref hs_err code.
+ *     returns 0 on timeout, or a negative @ref hs_error_code value.
  */
 HS_PUBLIC ssize_t hs_hid_read(struct hs_handle *h, uint8_t *buf, size_t size, int timeout);
 /**
@@ -112,7 +112,7 @@ HS_PUBLIC ssize_t hs_hid_write(struct hs_handle *h, const uint8_t *buf, size_t s
  * @param      size      Size of the report buffer.
  *
  * @return This function returns the size of the report in bytes + 1 (report ID),
- *     or a negative @ref hs_err code.
+ *     or a negative @ref hs_error_code value.
  */
 HS_PUBLIC ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uint8_t *buf, size_t size);
 /**
@@ -126,7 +126,7 @@ HS_PUBLIC ssize_t hs_hid_get_feature_report(hs_handle *h, uint8_t report_id, uin
  * @param size Output report size (including the report ID byte).
  *
  * @return This function returns the size of the report in bytes + 1 (report ID),
- *     or a negative @ref hs_err code.
+ *     or a negative @ref hs_error_code value.
  */
 HS_PUBLIC ssize_t hs_hid_send_feature_report(struct hs_handle *h, const uint8_t *buf, size_t size);
 

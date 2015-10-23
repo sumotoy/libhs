@@ -209,7 +209,7 @@ HS_PUBLIC struct hs_monitor *hs_device_get_monitor(const hs_device *dev);
  *
  * @param      dev Device object to open.
  * @param[out] rh  Device handle, the value is changed only if the function succeeds.
- * @return This function returns 0 on success, or a negative value otherwise (see @ref hs_err).
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value.
  */
 HS_PUBLIC int hs_device_open(hs_device *dev, hs_handle **rh);
 

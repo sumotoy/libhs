@@ -50,7 +50,7 @@ typedef struct hs_monitor hs_monitor;
  *
  * You must return 0 to continue the enumeration or event processing. Non-zero values stop the
  * process and are returned from the enumeration/refresh function. You should probably use
- * negative values for errors (@ref hs_err) and positive values otherwise, but this is not
+ * negative values for errors (@ref hs_error_code) and positive values otherwise, but this is not
  * enforced.
  *
  * @param dev   Device object.
@@ -70,7 +70,7 @@ typedef int hs_monitor_callback_func(struct hs_device *dev, void *udata);
  *
  * @param[out] rmonitor A pointer to the variable that receives the device monitor, it will stay
  *     unchanged if the function fails.
- * @return This function returns 0 on success, or a negative @ref hs_err code otherwise.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value.
  *
  * @sa hs_monitor_free()
  */
@@ -125,7 +125,7 @@ HS_PUBLIC hs_descriptor hs_monitor_get_descriptor(const hs_monitor *monitor);
  * @param monitor Device monitor.
  * @param f       Device event callback.
  * @param udata   Pointer to user-defined arbitrary data for the callback.
- * @return This function returns the callback ID on success, or a negative @ref hs_err code.
+ * @return This function returns the callback ID on success, or a negative @ref hs_error_code value.
  *
  * @sa hs_monitor_callback_func()
  * @sa hs_monitor_deregister_callback()
@@ -154,8 +154,8 @@ HS_PUBLIC void hs_monitor_deregister_callback(hs_monitor *monitor, int id);
  * This function is non-blocking.
  *
  * @param monitor Device monitor.
- * @return This function returns 0 on success, or a negative @ref hs_err code. When a callback
- *     returns a non-zero value, the refresh is interrupted and the value is returned.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value. If a
+ *     callback returns a non-zero value, the refresh is interrupted and the value is returned.
  *
  * @sa hs_monitor_callback_func()
  * @sa hs_monitor_register_callback()
@@ -174,8 +174,8 @@ HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
  * @param monitor Device monitor.
  * @param f       Device enumeration callback.
  * @param udata   Pointer to user-defined arbitrary data for the callback.
- * @return This function returns 0 on success, or a negative @ref hs_err code. When the callback
- *     returns a non-zero value, the enumeration is interrupted and the value is returned.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value. If the
+ *     callback returns a non-zero value, the enumeration is interrupted and the value is returned.
  *
  * @sa hs_monitor_refresh()
  * @sa hs_monitor_callback_func()

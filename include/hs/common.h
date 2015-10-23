@@ -130,7 +130,7 @@ typedef enum hs_log_level {
  * @ingroup misc
  * @brief libhs error codes.
  */
-typedef enum hs_err {
+typedef enum hs_error_code {
     /** Memory error. */
     HS_ERROR_MEMORY        = -1,
     /** Missing resource error. */
@@ -143,7 +143,7 @@ typedef enum hs_err {
     HS_ERROR_SYSTEM        = -5,
     /** Invalid data error. */
     HS_ERROR_INVALID       = -6
-} hs_err;
+} hs_error_code;
 
 typedef void hs_log_func(hs_log_level level, const char *msg, void *udata);
 
@@ -242,7 +242,7 @@ HS_PUBLIC void hs_log(hs_log_level level, const char *fmt, ...) HS_PRINTF_FORMAT
  *
  * @sa hs_error_unmask()
  */
-HS_PUBLIC void hs_error_mask(hs_err err);
+HS_PUBLIC void hs_error_mask(hs_error_code err);
 /**
  * @ingroup misc
  * @brief Unmask the last masked error code.
@@ -279,7 +279,7 @@ HS_PUBLIC void hs_error_unmask(void);
  * @sa hs_error_mask() to mask specific error codes.
  * @sa hs_log_redirect() to use a custom callback function.
  */
-HS_PUBLIC int hs_error(hs_err err, const char *fmt, ...) HS_PRINTF_FORMAT(2, 3);
+HS_PUBLIC int hs_error(hs_error_code err, const char *fmt, ...) HS_PRINTF_FORMAT(2, 3);
 
 HS_END_C
 

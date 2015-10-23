@@ -237,7 +237,7 @@ HS_PUBLIC void hs_descriptor_set_remove(hs_descriptor_set *set, int id);
  * @param set     Descriptor set.
  * @param timeout Timeout in milliseconds, or -1 to block indefinitely.
  * @return This function returns the value associated to the first descriptor to become readable.
- *     It returns 0 on timeout, or a negative @ref hs_err code.
+ *     It returns 0 on timeout, or a negative @ref hs_error_code value.
  *
  * @sa hs_descriptor_set
  */

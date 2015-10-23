@@ -127,7 +127,7 @@ enum hs_serial_flag {
  * @param h     Open serial device handle.
  * @param rate  Serial baud rate, see @ref hs_serial_rate.
  * @param flags Serial connection settings, see @ref hs_serial_flag.
- * @return This function returns 0 on success, or a negative @ref hs_err code.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value.
  *
  * @sa hs_serial_rate for acceptable baud rates.
  * @sa hs_serial_flag for supported control flags.
@@ -145,7 +145,7 @@ HS_PUBLIC int hs_serial_set_attributes(struct hs_handle *h, uint32_t rate, int f
  * @param[out] buf     Data buffer.
  * @param      size    Size of the buffer.
  * @param      timeout Timeout in milliseconds, or -1 to block indefinitely.
- * @return This function returns the number of bytes read, or a negative @ref hs_err code on error.
+ * @return This function returns the number of bytes read, or a negative @ref hs_error_code value.
  */
 HS_PUBLIC ssize_t hs_serial_read(struct hs_handle *h, uint8_t *buf, size_t size, int timeout);
 /**
@@ -158,8 +158,8 @@ HS_PUBLIC ssize_t hs_serial_read(struct hs_handle *h, uint8_t *buf, size_t size,
  * @param h    Device handle.
  * @param buf  Data buffer.
  * @param size Size of the buffer.
- * @return This function returns the number of bytes written, or a negative @ref hs_err
- *     code on error.
+ * @return This function returns the number of bytes written, or a negative @ref hs_error_code
+ *     value.
  */
 HS_PUBLIC ssize_t hs_serial_write(struct hs_handle *h, const uint8_t *buf, ssize_t size);
 

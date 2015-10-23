@@ -115,6 +115,19 @@ typedef int hs_descriptor;
 
 /**
  * @ingroup misc
+ * @brief libhs message log levels.
+ */
+typedef enum hs_log_level {
+    /** Internal debug information. */
+    HS_LOG_DEBUG = -1,
+    /** Non-fatal problem. */
+    HS_LOG_WARNING,
+    /** Fatal errors. */
+    HS_LOG_ERROR
+} hs_log_level;
+
+/**
+ * @ingroup misc
  * @brief libhs error codes.
  */
 typedef enum hs_err {
@@ -132,7 +145,7 @@ typedef enum hs_err {
     HS_ERROR_INVALID       = -6
 } hs_err;
 
-typedef void hs_error_func(hs_err err, const char *msg, void *udata);
+typedef void hs_log_func(hs_log_level level, const char *msg, void *udata);
 
 /**
  * @{
@@ -167,28 +180,51 @@ HS_PUBLIC const char *hs_version_string(void);
 
 /**
  * @{
+ * @name Log Functions
+ */
+
+/**
+ * @ingroup misc
+ * @brief Change the log callback function.
+ *
+ * The default callback prints the message to stderr. It does not print debug messages unless
+ * the environment variable LIBHS_DEBUG is set.
+ *
+ * @param f     New repport message callback, or NULL to restore the default one.
+ * @param udata Pointer to user-defined data for the callback.
+ *
+ * @sa hs_error()
+ */
+HS_PUBLIC void hs_log_redirect(hs_log_func *f, void *udata);
+/**
+ * @ingroup misc
+ * @brief Call the log callback with a printf-formatted message.
+ *
+ * Format a message and call the log callback with it. The default callback prints it to stderr,
+ * see hs_log_redirect(). This callback does not print debug messages unless the environment
+ * variable LIBHS_DEBUG is set.
+ *
+ * @param level Log level.
+ * @param fmt Format string, using printf syntax.
+ * @param ...
+ *
+ * @sa hs_log_redirect() to use a custom callback function.
+ */
+HS_PUBLIC void hs_log(hs_log_level level, const char *fmt, ...) HS_PRINTF_FORMAT(2, 3);
+
+/** @} */
+
+/**
+ * @{
  * @name Error Functions
  */
 
 /**
  * @ingroup misc
- * @brief Change the error message handler.
- *
- * The default handler prints the message to stderr.
- *
- * @param f     New error message handler, or NULL to restore the default handler.
- * @param udata Pointer to user-defined arbitrary data for the message handler.
- *
- * @sa hs_error()
- */
-HS_PUBLIC void hs_error_redirect(hs_error_func *f, void *udata);
-/**
- * @ingroup misc
  * @brief Mask an error code.
  *
- * Mask error codes to prevent libhs from calling the error message handler (the default one
- * simply prints the string to stderr). It does not change the behavior of the function where
- * the error occurs.
+ * Mask error codes to prevent libhs from calling the log callback (the default one simply prints
+ * the string to stderr). It does not change the behavior of the function where the error occurs.
  *
  * For example, if you want to open a device without a missing device message, you can use:
  * @code{.c}
@@ -214,13 +250,12 @@ HS_PUBLIC void hs_error_mask(hs_err err);
  * @sa hs_error_mask()
  */
 HS_PUBLIC void hs_error_unmask(void);
-
 /**
  * @ingroup misc
- * @brief Call the error message handler with a printf-formatted message.
+ * @brief Call the log callback with a printf-formatted error message.
  *
- * Format an error message and call the error handler with it. Pass NULL to @p fmt to use a
- * generic error message. The default handler prints it to stderr, see hs_error_redirect().
+ * Format an error message and call the log callback with it. Pass NULL to @p fmt to use a
+ * generic error message. The default callback prints it to stderr, see hs_log_redirect().
  *
  * The error code is simply returned as a convenience, so you can use this function like:
  * @code{.c}
@@ -242,7 +277,7 @@ HS_PUBLIC void hs_error_unmask(void);
  * @return This function returns the error code.
  *
  * @sa hs_error_mask() to mask specific error codes.
- * @sa hs_error_redirect() to use a custom message handler.
+ * @sa hs_log_redirect() to use a custom callback function.
  */
 HS_PUBLIC int hs_error(hs_err err, const char *fmt, ...) HS_PRINTF_FORMAT(2, 3);
 

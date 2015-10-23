@@ -25,9 +25,9 @@
 #include "util.h"
 #include <stdarg.h>
 
-static void default_handler(hs_err err, const char *msg, void *udata);
+static void default_handler(hs_log_level level, const char *msg, void *udata);
 
-static hs_error_func *handler = default_handler;
+static hs_log_func *handler = default_handler;
 static void *handler_udata = NULL;
 
 static hs_err mask[32];
@@ -66,16 +66,19 @@ static const char *generic_message(int err)
     return "Unknown error";
 }
 
-static void default_handler(hs_err err, const char *msg, void *udata)
+static void default_handler(hs_log_level level, const char *msg, void *udata)
 {
-    _HS_UNUSED(err);
+    _HS_UNUSED(level);
     _HS_UNUSED(udata);
+
+    if (level == HS_LOG_DEBUG && !getenv("LIBHS_DEBUG"))
+        return;
 
     fputs(msg, stderr);
     fputc('\n', stderr);
 }
 
-void hs_error_redirect(hs_error_func *f, void *udata)
+void hs_log_redirect(hs_log_func *f, void *udata)
 {
     if (f) {
         handler = f;
@@ -100,28 +103,42 @@ void hs_error_unmask(void)
     mask_count--;
 }
 
+HS_PRINTF_FORMAT(2, 0)
+static void logv(hs_log_level level, const char *fmt, va_list ap)
+{
+    char buf[512];
+
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    (*handler)(level, buf, handler_udata);
+}
+
+void hs_log(hs_log_level level, const char *fmt, ...)
+{
+    assert(fmt);
+
+    va_list ap;
+
+    va_start(ap, fmt);
+    logv(level, fmt, ap);
+    va_end(ap);
+}
+
 int hs_error(hs_err err, const char *fmt, ...)
 {
     va_list ap;
-    char buf[512];
-
-    va_start(ap, fmt);
 
     for (unsigned int i = 0; i < mask_count; i++) {
         if (mask[i] == err)
-            goto cleanup;
+            return err;
     }
 
     if (fmt) {
-        vsnprintf(buf, sizeof(buf), fmt, ap);
+        va_start(ap, fmt);
+        logv(HS_LOG_ERROR, fmt, ap);
+        va_end(ap);
     } else {
-        strncpy(buf, generic_message(err), sizeof(buf));
-        buf[sizeof(buf) - 1] = 0;
+        hs_log(HS_LOG_ERROR, "%s", generic_message(err));
     }
 
-    (*handler)(err, buf, handler_udata);
-
-cleanup:
-    va_end(ap);
     return err;
 }

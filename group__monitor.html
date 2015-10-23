@@ -111,7 +111,7 @@ Functions</h2></td></tr>
 
 <p>Device enumeration and event callback. </p>
 <p>When refreshing, use <a class="el" href="group__device.html#gabf57677ab0a1292f5fafd87ff8ee42b9" title="Get the current device status. ">hs_device_get_status()</a> to distinguish between added and removed events.</p>
-<p>You must return 0 to continue the enumeration or event processing. Non-zero values stop the process and are returned from the enumeration/refresh function. You should probably use negative values for errors (<a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a>) and positive values otherwise, but this is not enforced.</p>
+<p>You must return 0 to continue the enumeration or event processing. Non-zero values stop the process and are returned from the enumeration/refresh function. You should probably use negative values for errors (<a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a>) and positive values otherwise, but this is not enforced.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dev</td><td>Device object. </td></tr>
@@ -148,7 +148,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> code otherwise.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#gaa2c24eeaa4d0a4dbab9b9c0b07696c07" title="Close a device monitor. ">hs_monitor_free()</a> </dd></dl>
 
 </div>
@@ -252,7 +252,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns the callback ID on success, or a negative <a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> code.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns the callback ID on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> </dd>
 <dd>
 <a class="el" href="group__monitor.html#ga439f4f0a7ea840274c07b3e4be9d1b33" title="Deregister a device event callback. ">hs_monitor_deregister_callback()</a> </dd>
@@ -322,7 +322,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> code. When a callback returns a non-zero value, the refresh is interrupted and the value is returned.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value. If a callback returns a non-zero value, the refresh is interrupted and the value is returned.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> </dd>
 <dd>
 <a class="el" href="group__monitor.html#ga96e121adfa3ac5060058bec3ee9c2d89" title="Register a device event callback. ">hs_monitor_register_callback()</a> </dd></dl>
@@ -370,7 +370,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#gaf987ed07669903194c9f28386fc0c29b">hs_err</a> code. When the callback returns a non-zero value, the enumeration is interrupted and the value is returned.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value. If the callback returns a non-zero value, the enumeration is interrupted and the value is returned.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> </dd>
 <dd>
 <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> </dd></dl>
@@ -382,7 +382,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Oct 20 2015 14:24:51 for libhs by
+    <li class="footer">Generated on Fri Oct 23 2015 15:17:59 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

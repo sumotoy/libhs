@@ -573,10 +573,6 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
         r = 0;
         goto cleanup;
     }
-    if (strncmp(buf, "USB\\", 4) != 0) {
-        r = 0;
-        goto cleanup;
-    }
 
     r = build_device_path(buf, &GUID_DEVINTERFACE_USB_HUB, &path);
     if (r < 0)

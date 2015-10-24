@@ -737,6 +737,15 @@ static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint
     if (r < 0)
         return r;
 
+    // HID devices can have multiple collections for each interface, ignore them
+    if (strncmp(dev->key, "HID\\", 4) == 0) {
+        const char *ptr = strstr(dev->key, "&COL");
+        if (ptr && strncmp(ptr, "&COL01\\",  7) != 0) {
+            r = 0;
+            goto cleanup;
+        }
+    }
+
     if (!inst) {
         cret = CM_Locate_DevNode(&inst, dev->key, CM_LOCATE_DEVNODE_NORMAL);
         if (cret != CR_SUCCESS) {

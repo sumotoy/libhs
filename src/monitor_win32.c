@@ -434,18 +434,12 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
     return (int)depth;
 }
 
-static int read_device_properties_hid(hs_device *dev)
+static int read_hid_properties(hs_device *dev, const USB_DEVICE_DESCRIPTOR *desc)
 {
     HANDLE h = NULL;
     wchar_t wbuf[256];
     BOOL success;
     int r;
-
-    r = sscanf(dev->path, "\\\\.\\HID#VID_%04hx&PID_%04hx&MI_%02hhu", &dev->vid, &dev->pid, &dev->iface);
-    if (r < 2) {
-        r = 0;
-        goto cleanup;
-    }
 
     h = CreateFile(dev->path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     if (!h) {
@@ -453,21 +447,22 @@ static int read_device_properties_hid(hs_device *dev)
         goto cleanup;
     }
 
-#define READ_PROPERTY(func, dest) \
-        do { \
+#define READ_HID_PROPERTY(index, func, dest) \
+        if (index) { \
             success = func(h, wbuf, sizeof(wbuf)); \
             if (success) { \
+                wbuf[sizeof(wbuf) - 1] = 0; \
                 r = wide_to_cstring(wbuf, wcslen(wbuf) * sizeof(wchar_t), (dest)); \
                 if (r < 0) \
                     goto cleanup; \
             } \
-        } while (0)
+        }
 
-    READ_PROPERTY(HidD_GetManufacturerString, &dev->manufacturer);
-    READ_PROPERTY(HidD_GetProductString, &dev->product);
-    READ_PROPERTY(HidD_GetSerialNumberString, &dev->serial);
+    READ_HID_PROPERTY(desc->iManufacturer, HidD_GetManufacturerString, &dev->manufacturer);
+    READ_HID_PROPERTY(desc->iProduct, HidD_GetProductString, &dev->product);
+    READ_HID_PROPERTY(desc->iSerialNumber, HidD_GetSerialNumberString, &dev->serial);
 
-#undef READ_PROPERTY
+#undef READ_HID_PROPERTY
 
     r = 1;
 cleanup:
@@ -605,6 +600,15 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
                               node, len, &len, NULL);
     if (!success) {
         r = 1;
+        goto cleanup;
+    }
+
+    /* Descriptor requests to USB devices underlying HID devices fail most (all?) of the time,
+       so we need a different technique here. We still need the device descriptor because the
+       HidD_GetXString() functions sometime return garbage (at least on XP) when the string
+       index is 0. */
+    if (dev->type == HS_DEVICE_TYPE_HID) {
+        r = read_hid_properties(dev, &node->DeviceDescriptor);
         goto cleanup;
     }
 
@@ -760,11 +764,7 @@ static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint
         depth = (unsigned int)r;
     }
 
-    if (dev->type == HS_DEVICE_TYPE_HID) {
-        r = read_device_properties_hid(dev);
-    } else {
-        r = read_device_properties(dev, inst, ports[depth - 1]);
-    }
+    r = read_device_properties(dev, inst, ports[depth - 1]);
     if (r <= 0)
         goto cleanup;
 

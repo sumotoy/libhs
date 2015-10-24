@@ -451,7 +451,7 @@ static int read_hid_properties(hs_device *dev, const USB_DEVICE_DESCRIPTOR *desc
         if (index) { \
             success = func(h, wbuf, sizeof(wbuf)); \
             if (success) { \
-                wbuf[sizeof(wbuf) - 1] = 0; \
+                wbuf[_HS_COUNTOF(wbuf) - 1] = 0; \
                 r = wide_to_cstring(wbuf, wcslen(wbuf) * sizeof(wchar_t), (dest)); \
                 if (r < 0) \
                     goto cleanup; \

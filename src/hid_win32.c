@@ -32,9 +32,9 @@
 #include "hs/hid.h"
 #include "hs/platform.h"
 
-#ifdef __MINGW32__
-// MinGW may miss these
-__declspec(dllimport) BOOLEAN NTAPI HidD_GetPreparsedData(HANDLE HidDeviceObject, PHIDP_PREPARSED_DATA *PreparsedData);
+#if defined(__MINGW64_VERSION_MAJOR) && __MINGW64_VERSION_MAJOR < 4
+__declspec(dllimport) BOOLEAN NTAPI HidD_GetPreparsedData(HANDLE HidDeviceObject,
+                                                          PHIDP_PREPARSED_DATA *PreparsedData);
 __declspec(dllimport) BOOLEAN NTAPI HidD_FreePreparsedData(PHIDP_PREPARSED_DATA PreparsedData);
 #endif
 

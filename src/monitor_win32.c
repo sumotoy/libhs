@@ -81,9 +81,9 @@ struct device_notification {
     char *key;
 };
 
-#ifdef __MINGW32__
-// MinGW may miss these
-__declspec(dllimport) void NTAPI HidD_GetHidGuid(LPGUID HidGuid);
+#if defined(__MINGW64_VERSION_MAJOR) && __MINGW64_VERSION_MAJOR < 4
+__declspec(dllimport) BOOLEAN NTAPI HidD_GetSerialNumberString(HANDLE HidDeviceObject,
+                                                               PVOID Buffer, ULONG BufferLength);
 #endif
 
 extern const struct _hs_device_vtable _hs_win32_device_vtable;

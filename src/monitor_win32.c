@@ -871,7 +871,7 @@ static int browse_controller_tree(hs_monitor *monitor, DEVINST inst, DWORD index
     }
 
     ports[0] = controller->index;
-    r = recurse_devices(monitor, inst, ports, 1);
+    r = recurse_devices(monitor, roothub_inst, ports, 1);
     if (r < 0)
         goto error;
 
@@ -920,8 +920,9 @@ static int list_devices(hs_monitor *monitor)
 
     r = 0;
 cleanup:
-    SetupDiDestroyDeviceInfoList(set);
-    return 0;
+    if (set)
+        SetupDiDestroyDeviceInfoList(set);
+    return r;
 }
 
 static int post_device_event(hs_monitor *monitor, enum device_event event, DEV_BROADCAST_DEVICEINTERFACE *data)

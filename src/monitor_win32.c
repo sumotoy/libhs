@@ -160,8 +160,10 @@ static uint8_t find_device_port_vista(DEVINST inst)
 
     len = sizeof(buf);
     cret = CM_Get_DevNode_Registry_Property(inst, CM_DRP_LOCATION_INFORMATION, NULL, buf, &len, 0);
-    if (cret != CR_SUCCESS)
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_DEBUG, "No location information on this device node");
         return 0;
+    }
 
     port = 0;
     sscanf(buf, "Port_#%04hhu", &port);
@@ -266,6 +268,7 @@ static int get_port_driverkey(HANDLE hub, uint8_t port, char **rkey)
     success = DeviceIoControl(hub, IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX, node, len,
                               node, len, &len, NULL);
     if (!success) {
+        hs_log(HS_LOG_WARNING, "DeviceIoControl(IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX) failed");
         r = 0;
         goto cleanup;
     }
@@ -278,6 +281,7 @@ static int get_port_driverkey(HANDLE hub, uint8_t port, char **rkey)
     success = DeviceIoControl(hub, IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME, &pseudo, sizeof(pseudo),
                               &pseudo, sizeof(pseudo), &len, NULL);
     if (!success) {
+        hs_log(HS_LOG_WARNING, "DeviceIoControl(IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME) failed");
         r = 0;
         goto cleanup;
     }
@@ -293,6 +297,7 @@ static int get_port_driverkey(HANDLE hub, uint8_t port, char **rkey)
     success = DeviceIoControl(hub, IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME, wide, pseudo.ActualLength,
                               wide, pseudo.ActualLength, &len, NULL);
     if (!success) {
+        hs_log(HS_LOG_WARNING, "DeviceIoControl(IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME) failed");
         r = 0;
         goto cleanup;
     }
@@ -327,9 +332,11 @@ static int find_device_port_xp(const char *hub_id, const char *child_key)
         goto cleanup;
     }
 
+    hs_log(HS_LOG_DEBUG, "Asking HUB at '%s' for port information (XP code path)", path);
     success = DeviceIoControl(h, IOCTL_USB_GET_NODE_INFORMATION, NULL, 0, &node, sizeof(node),
                               &len, NULL);
     if (!success) {
+        hs_log(HS_LOG_WARNING, "DeviceIoControl(IOCTL_USB_GET_NODE_INFORMATION) failed");
         r = 0;
         goto cleanup;
     }
@@ -374,8 +381,11 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
         inst = parent;
 
         cret = CM_Get_Device_ID(inst, id, sizeof(id), 0);
-        if (cret != CR_SUCCESS)
+        if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
             return 0;
+        }
+        hs_log(HS_LOG_DEBUG, "Going through device parents to find USB node: '%s'", id);
 
         cret = CM_Get_Parent(&parent, inst, 0);
     } while (cret == CR_SUCCESS && strncmp(id, "USB\\", 4) != 0);
@@ -384,14 +394,18 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
 
     depth = 0;
     do {
+        hs_log(HS_LOG_DEBUG, "Going through device parents to resolve USB location: '%s'", id);
+
         if (depth == MAX_USB_DEPTH) {
             hs_log(HS_LOG_WARNING, "Excessive USB location depth, ignoring device");
             return 0;
         }
 
         cret = CM_Get_Device_ID(parent, id, sizeof(id), 0);
-        if (cret != CR_SUCCESS)
+        if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
             return 0;
+        }
 
         // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
         if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
@@ -402,21 +416,31 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
 
             len = sizeof(child_key);
             cret = CM_Get_DevNode_Registry_Property(inst, CM_DRP_DRIVER, NULL, child_key, &len, 0);
-            if (cret != CR_SUCCESS)
+            if (cret != CR_SUCCESS) {
+                hs_log(HS_LOG_WARNING, "Failed to get device driver key: 0x%lx", cret);
                 return 0;
+            }
 
             r = find_device_port_xp(id, child_key);
         }
         if (r < 0)
             return r;
-        if (r)
+        if (r) {
             ports[depth++] = (uint8_t)r;
+            hs_log(HS_LOG_DEBUG, "Found port number: %d", r);
+        }
 
         if (strstr(id, "\\ROOT_HUB")) {
             if (!depth)
                 return 0;
 
-            ports[depth++] = find_controller_index(controllers, id);
+            ports[depth] = find_controller_index(controllers, id);
+            if (!ports[depth]) {
+                hs_log(HS_LOG_WARNING, "Unknown USB host controller '%s'", id);
+                return 0;
+            }
+            depth++;
+
             break;
         }
 
@@ -443,6 +467,7 @@ static int read_hid_properties(hs_device *dev, const USB_DEVICE_DESCRIPTOR *desc
 
     h = CreateFile(dev->path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     if (!h) {
+        hs_log(HS_LOG_WARNING, "Cannot open HID device '%s': %s", dev->path, hs_win32_strerror(0));
         r = 0;
         goto cleanup;
     }
@@ -455,6 +480,8 @@ static int read_hid_properties(hs_device *dev, const USB_DEVICE_DESCRIPTOR *desc
                 r = wide_to_cstring(wbuf, wcslen(wbuf) * sizeof(wchar_t), (dest)); \
                 if (r < 0) \
                     goto cleanup; \
+            } else { \
+                hs_log(HS_LOG_WARNING, "Function %s() failed despite non-zero string index", #func); \
             } \
         }
 
@@ -506,12 +533,17 @@ static int get_string_descriptor(HANDLE h, uint8_t port, uint8_t index, char **r
 
     success = DeviceIoControl(h, IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION, &string, sizeof(string),
                               &string, sizeof(string), &len, NULL);
-    if (!success)
+    if (!success) {
+        hs_log(HS_LOG_WARNING, "DeviceIoControl(IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION) failed: %s",
+               hs_win32_strerror(0));
         return 0;
+    }
 
     if (len < 2 || string.desc.bDescriptorType != USB_STRING_DESCRIPTOR_TYPE ||
-            string.desc.bLength != len - sizeof(string.req) || string.desc.bLength % 2 != 0)
+            string.desc.bLength != len - sizeof(string.req) || string.desc.bLength % 2 != 0) {
+        hs_log(HS_LOG_WARNING, "Malformed or corrupt string descriptor");
         return 0;
+    }
 
     r = wide_to_cstring(string.desc.bString, len - sizeof(USB_DESCRIPTOR_REQUEST), &s);
     if (r < 0)
@@ -535,8 +567,10 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
     // Get the device handle corresponding to the USB device or interface
     do {
         cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
-        if (cret != CR_SUCCESS)
+        if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
             return 0;
+        }
 
         if (strncmp(buf, "USB\\", 4) == 0)
             break;
@@ -544,6 +578,7 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
         cret = CM_Get_Parent(&inst, inst, 0);
     } while (cret == CR_SUCCESS);
     if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Parent() failed: 0x%lx", cret);
         r = 0;
         goto cleanup;
     }
@@ -551,6 +586,7 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
     dev->iface = 0;
     r = sscanf(buf, "USB\\VID_%04hx&PID_%04hx&MI_%02hhu", &dev->vid, &dev->pid, &dev->iface);
     if (r < 2) {
+        hs_log(HS_LOG_WARNING, "Failed to parse USB properties from '%s'", buf);
         r = 0;
         goto cleanup;
     }
@@ -559,17 +595,20 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
     if (r == 3) {
         cret = CM_Get_Parent(&inst, inst, 0);
         if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "CM_Get_Parent() failed: 0x%lx", cret);
             r = 0;
             goto cleanup;
         }
     }
     cret = CM_Get_Parent(&inst, inst, 0);
     if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Parent() failed: 0x%lx", cret);
         r = 0;
         goto cleanup;
     }
     cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
     if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
         r = 0;
         goto cleanup;
     }
@@ -580,6 +619,8 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
 
     h = CreateFile(path, GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
     if (!h) {
+        hs_log(HS_LOG_WARNING, "Cannot open parent hub device at '%s', ignoring device properties for '%s'",
+               path, dev->key);
         r = 1;
         goto cleanup;
     }
@@ -595,6 +636,8 @@ static int read_device_properties(hs_device *dev, DEVINST inst, uint8_t port)
     success = DeviceIoControl(h, IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX, node, len,
                               node, len, &len, NULL);
     if (!success) {
+        hs_log(HS_LOG_WARNING, "Failed to interrogate hub device at '%s' for device '%s'", path,
+               dev->key);
         r = 1;
         goto cleanup;
     }
@@ -641,14 +684,19 @@ static int get_device_comport(DEVINST inst, char **rnode)
     int r;
 
     cret = CM_Open_DevNode_Key(inst, KEY_READ, 0, RegDisposition_OpenExisting, &key, CM_REGISTRY_HARDWARE);
-    if (cret != CR_SUCCESS)
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Open_DevNode_Key() failed: 0x%lu", cret);
         return 0;
+    }
 
     len = (DWORD)sizeof(buf);
     ret = RegQueryValueEx(key, "PortName", NULL, &type, (BYTE *)buf, &len);
     RegCloseKey(key);
-    if (ret != ERROR_SUCCESS)
+    if (ret != ERROR_SUCCESS) {
+        if (ret != ERROR_FILE_NOT_FOUND)
+            hs_log(HS_LOG_WARNING, "RegQueryValue() failed: %ld", ret);
         return 0;
+    }
 
     r = asprintf(&node, "\\\\.\\%s", buf);
     if (r < 0)
@@ -667,7 +715,11 @@ static int find_device_node(DEVINST inst, hs_device *dev)
        them serial if registry key "PortName" is available (and use its value as device node). */
     if (strncmp(dev->key, "USB\\", 4) == 0) {
         r = get_device_comport(inst, &dev->path);
-        if (r <= 0)
+        if (!r) {
+            hs_log(HS_LOG_DEBUG, "Device '%s' has no 'PortName' registry property", dev->key);
+            return r;
+        }
+        if (r < 0)
             return r;
 
         dev->type = HS_DEVICE_TYPE_SERIAL;
@@ -685,6 +737,7 @@ static int find_device_node(DEVINST inst, hs_device *dev)
         }
     }
 
+    hs_log(HS_LOG_DEBUG, "Unknown device type for '%s'", dev->key);
     return 0;
 }
 
@@ -737,14 +790,17 @@ static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint
     if (strncmp(dev->key, "HID\\", 4) == 0) {
         const char *ptr = strstr(dev->key, "&COL");
         if (ptr && strncmp(ptr, "&COL01\\",  7) != 0) {
+            hs_log(HS_LOG_DEBUG, "Ignoring duplicate HID collection device '%s'", dev->key);
             r = 0;
             goto cleanup;
         }
     }
 
+    hs_log(HS_LOG_DEBUG, "Examining device '%s' with key '%s'", id, dev->key);
     if (!inst) {
         cret = CM_Locate_DevNode(&inst, dev->key, CM_LOCATE_DEVNODE_NORMAL);
         if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "Device node '%s' does not exist: 0x%lx", dev->key, cret);
             r = 0;
             goto cleanup;
         }
@@ -798,41 +854,54 @@ static int recurse_devices(hs_monitor *monitor, DEVINST inst, uint8_t ports[], u
     }
 
     cret = CM_Get_Device_ID(inst, id, sizeof(id), 0);
-    if (cret != CR_SUCCESS)
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
         return 0;
+    }
 
     cret = CM_Get_Child(&child, inst, 0);
-    // Leaf = actual device, so just try to create a device struct for it
-    if (cret != CR_SUCCESS)
+    if (cret != CR_SUCCESS && cret != CR_NO_SUCH_DEVNODE) {
+        hs_log(HS_LOG_WARNING, "Cannot enumerate children of device node '%s': 0x%lx", id, cret);
+        return 0;
+    }
+
+    // Consider leafs as actual devices, as a first approximation
+    if (cret == CR_NO_SUCH_DEVNODE) {
         return create_device(monitor, id, inst, ports, depth);
+    } else {
+        hs_log(HS_LOG_DEBUG, "Browsing device tree for '%s' at depth %u", id, depth);
+        do {
+            // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
+            if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
+                r = find_device_port_vista(child);
+            } else {
+                char key[256];
+                DWORD len;
 
-    do {
-        // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
-        if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
-            r = find_device_port_vista(child);
-        } else {
-            char key[256];
-            DWORD len;
+                len = sizeof(key);
+                cret = CM_Get_DevNode_Registry_Property(child, CM_DRP_DRIVER, NULL, key, &len, 0);
+                if (cret != CR_SUCCESS) {
+                    hs_log(HS_LOG_WARNING, "Failed to get driver key for device node: 0x%lx", cret);
+                    return 0;
+                }
 
-            len = sizeof(key);
-            cret = CM_Get_DevNode_Registry_Property(child, CM_DRP_DRIVER, NULL, key, &len, 0);
-            if (cret != CR_SUCCESS)
-                return 0;
+                r = find_device_port_xp(id, key);
+            }
+            if (r < 0)
+                return r;
 
-            r = find_device_port_xp(id, key);
-        }
-        if (r < 0)
-            return r;
+            ports[depth] = (uint8_t)r;
+            r = recurse_devices(monitor, child, ports, depth + !!r);
+            if (r < 0)
+                return r;
 
-        ports[depth] = (uint8_t)r;
-        r = recurse_devices(monitor, child, ports, depth + !!r);
-        if (r < 0)
-            return r;
+            cret = CM_Get_Sibling(&child, child, 0);
+        } while (cret == CR_SUCCESS);
+        if (cret != CR_NO_SUCH_DEVNODE)
+            hs_log(HS_LOG_WARNING, "Partial enumeration of device node '%s': 0x%lx", id, cret);
 
-        cret = CM_Get_Sibling(&child, child, 0);
-    } while (cret == CR_SUCCESS);
-
-    return 0;
+        return 0;
+    }
 }
 
 static int browse_controller_tree(hs_monitor *monitor, DEVINST inst, DWORD index)
@@ -855,12 +924,19 @@ static int browse_controller_tree(hs_monitor *monitor, DEVINST inst, DWORD index
 
     cret = CM_Get_Child(&roothub_inst, inst, 0);
     if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "Found USB Host controller without a root hub");
         r = 0;
         goto error;
     }
 
     cret = CM_Get_Device_ID(roothub_inst, buf, sizeof(buf), 0);
-    if (cret != CR_SUCCESS || !strstr(buf, "\\ROOT_HUB")) {
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
+        r = 0;
+        goto error;
+    }
+    if (!strstr(buf, "\\ROOT_HUB")) {
+        hs_log(HS_LOG_WARNING, "Unsupported root HUB at '%s'", buf);
         r = 0;
         goto error;
     }
@@ -870,6 +946,8 @@ static int browse_controller_tree(hs_monitor *monitor, DEVINST inst, DWORD index
         goto error;
     }
 
+    hs_log(HS_LOG_DEBUG, "Found USB root hub '%s' with ID %"PRIu8, controller->roothub_id,
+           controller->index);
     ports[0] = controller->index;
     r = recurse_devices(monitor, roothub_inst, ports, 1);
     if (r < 0)
@@ -1197,10 +1275,12 @@ int hs_monitor_refresh(hs_monitor *monitor)
 
         switch (notification->event) {
         case DEVICE_EVENT_ADDED:
+            hs_log(HS_LOG_DEBUG, "Received arrival notification for device '%s'", notification->key);
             r = create_device(monitor, notification->key, 0, NULL, 0);
             break;
 
         case DEVICE_EVENT_REMOVED:
+            hs_log(HS_LOG_DEBUG, "Received removal notification for device '%s'", notification->key);
             _hs_monitor_remove(monitor, notification->key);
             r = 0;
             break;

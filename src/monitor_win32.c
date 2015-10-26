@@ -493,7 +493,8 @@ static int read_hid_properties(hs_device *dev, const USB_DEVICE_DESCRIPTOR *desc
 
     r = 1;
 cleanup:
-    CloseHandle(h);
+    if (h)
+        CloseHandle(h);
     return r;
 }
 

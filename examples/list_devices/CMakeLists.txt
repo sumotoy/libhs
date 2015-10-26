@@ -20,4 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_subdirectory(list_devices)
+add_executable(list_devices list_devices.c)
+target_link_libraries(list_devices hs_static)

@@ -22,6 +22,7 @@
     <ProjectGuid>{F4522E42-8C7B-424D-A9C8-1F5198C507FC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>src</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,7 +72,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBHS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -87,7 +88,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBHS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -108,7 +109,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,37 +119,37 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\common.c" />
-    <ClCompile Include="src\compat.c" />
-    <ClCompile Include="src\device.c" />
-    <ClCompile Include="src\device_win32.c" />
-    <ClCompile Include="src\hid_win32.c" />
-    <ClCompile Include="src\htable.c" />
-    <ClCompile Include="src\monitor.c" />
-    <ClCompile Include="src\monitor_win32.c" />
-    <ClCompile Include="src\platform.c" />
-    <ClCompile Include="src\platform_win32.c" />
-    <ClCompile Include="src\serial_win32.c" />
+    <ClCompile Include="common.c" />
+    <ClCompile Include="compat.c" />
+    <ClCompile Include="device.c" />
+    <ClCompile Include="device_win32.c" />
+    <ClCompile Include="hid_win32.c" />
+    <ClCompile Include="htable.c" />
+    <ClCompile Include="monitor.c" />
+    <ClCompile Include="monitor_win32.c" />
+    <ClCompile Include="platform.c" />
+    <ClCompile Include="platform_win32.c" />
+    <ClCompile Include="serial_win32.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\hs.h" />
-    <ClInclude Include="include\hs\common.h" />
-    <ClInclude Include="include\hs\device.h" />
-    <ClInclude Include="include\hs\hid.h" />
-    <ClInclude Include="include\hs\monitor.h" />
-    <ClInclude Include="include\hs\platform.h" />
-    <ClInclude Include="include\hs\serial.h" />
-    <ClInclude Include="src\compat.h" />
-    <ClInclude Include="src\device_priv.h" />
-    <ClInclude Include="src\device_win32_priv.h" />
-    <ClInclude Include="src\htable.h" />
-    <ClInclude Include="src\list.h" />
-    <ClInclude Include="src\monitor_priv.h" />
-    <ClInclude Include="src\util.h" />
+    <ClInclude Include="..\include\hs.h" />
+    <ClInclude Include="..\include\hs\common.h" />
+    <ClInclude Include="..\include\hs\device.h" />
+    <ClInclude Include="..\include\hs\hid.h" />
+    <ClInclude Include="..\include\hs\monitor.h" />
+    <ClInclude Include="..\include\hs\platform.h" />
+    <ClInclude Include="..\include\hs\serial.h" />
+    <ClInclude Include="compat.h" />
+    <ClInclude Include="device_priv.h" />
+    <ClInclude Include="device_win32_priv.h" />
+    <ClInclude Include="htable.h" />
+    <ClInclude Include="list.h" />
+    <ClInclude Include="monitor_priv.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

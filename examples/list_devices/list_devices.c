@@ -24,10 +24,12 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-#include <unistd.h>
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+#else
+    #include <termios.h>
+    #include <unistd.h>
 #endif
 #include "hs.h"
 
@@ -128,12 +130,12 @@ int main(void)
         r = hs_poll(&set, -1);
     } while (r == 1);
 
-    /* Clear the terminal input buffer, just to avoid the extra return/characters from
-     * showing up when this program exits. This has nothing to do with libhs. */
     if (r == 2) {
-        char buf[32];
-
-        read(STDIN_FILENO, buf, sizeof(buf));
+#ifndef _WIN32
+        /* Clear the terminal input buffer, just to avoid the extra return/characters from
+        * showing up when this program exits. This has nothing to do with libhs. */
+        tcflush(STDIN_FILENO, TCIFLUSH);
+#endif
         r = 0;
     }
 

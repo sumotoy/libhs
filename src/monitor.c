@@ -157,7 +157,7 @@ void _hs_monitor_remove(hs_monitor *monitor, const char *key)
     }
 }
 
-int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata)
+int hs_monitor_list(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata)
 {
     assert(monitor);
     assert(f);

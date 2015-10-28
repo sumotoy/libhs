@@ -59,7 +59,7 @@ typedef struct hs_monitor hs_monitor;
  * @return Return 0 to continue the enumeration/event processing, or any other value to abort.
  *     The enumeration/refresh function will then return this value unchanged.
  *
- * @sa hs_monitor_enumerate() for enumeration.
+ * @sa hs_monitor_list() for enumeration.
  * @sa hs_monitor_refresh() for event processing.
  */
 typedef int hs_monitor_callback_func(struct hs_device *dev, void *udata);
@@ -180,7 +180,7 @@ HS_PUBLIC int hs_monitor_refresh(hs_monitor *monitor);
  * @sa hs_monitor_refresh()
  * @sa hs_monitor_callback_func()
  */
-HS_PUBLIC int hs_monitor_enumerate(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);
+HS_PUBLIC int hs_monitor_list(hs_monitor *monitor, hs_monitor_callback_func *f, void *udata);
 
 HS_END_C
 

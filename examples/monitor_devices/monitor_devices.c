@@ -40,7 +40,7 @@ static int device_callback(hs_device *dev, void *udata)
     const char *event = "?", *type = "?";
 
     /* Use hs_device_get_status() to differenciate between added and removed devices,
-       when called from hs_monitor_enumerate() it is always HS_DEVICE_STATUS_ONLINE. */
+       when called from hs_monitor_list() it is always HS_DEVICE_STATUS_ONLINE. */
     switch (hs_device_get_status(dev)) {
     case HS_DEVICE_STATUS_DISCONNECTED:
         event = "remove";
@@ -94,9 +94,9 @@ int main(void)
     printf("Current devices:\n");
 
     /* hs_monitor_new() goes through the device tree and makes an initial device list, so we
-       don't need hs_monitor_refresh() yet. But if you don't call hs_monitor_enumerate()
-       immediately, you need to use hs_monitor_refresh() before hs_monitor_enumerate(). */
-    r = hs_monitor_enumerate(monitor, device_callback, NULL);
+       don't need hs_monitor_refresh() yet. But if you don't call hs_monitor_list()
+       immediately, you need to use hs_monitor_refresh() before hs_monitor_list(). */
+    r = hs_monitor_list(monitor, device_callback, NULL);
     if (r < 0)
         goto cleanup;
 

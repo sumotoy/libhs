@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD20D7A7-9BD6-4562-8348-694230EAB35B}</ProjectGuid>
-    <RootNamespace>list_devices</RootNamespace>
+    <RootNamespace>monitor_devices</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,7 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="list_devices.c" />
+    <ClCompile Include="monitor_devices.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\src.vcxproj">

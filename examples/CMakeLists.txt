@@ -20,4 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_subdirectory(list_devices)
+add_subdirectory(monitor_devices)

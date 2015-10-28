@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "src", "src\src.vcxproj", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{156F749F-8902-450D-952E-0B39D11EF467}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "list_devices", "examples\list_devices\list_devices.vcxproj", "{FD20D7A7-9BD6-4562-8348-694230EAB35B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "monitor_devices", "examples\monitor_devices\monitor_devices.vcxproj", "{FD20D7A7-9BD6-4562-8348-694230EAB35B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F4522E42-8C7B-424D-A9C8-1F5198C507FC} = {F4522E42-8C7B-424D-A9C8-1F5198C507FC}
 	EndProjectSection

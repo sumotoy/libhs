@@ -20,5 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_executable(list_devices list_devices.c)
-target_link_libraries(list_devices hs_static)
+add_executable(monitor_devices monitor_devices.c)
+target_link_libraries(monitor_devices hs_static)

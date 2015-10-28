@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="list_devices.c">
+    <ClCompile Include="monitor_devices.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

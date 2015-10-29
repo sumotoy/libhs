@@ -28,6 +28,7 @@
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
 #include <mach/mach.h>
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
@@ -41,19 +42,46 @@ struct hs_monitor {
     _HS_MONITOR
 
     IONotificationPortRef notify_port;
-    io_iterator_t attach_it[8];
-    unsigned int match_count;
-    io_iterator_t detach_it;
+    io_iterator_t iterators[8];
+    unsigned int iterator_count;
     int notify_ret;
 
     int kqfd;
     mach_port_t port_set;
+};
 
-    _hs_list_head controllers;
+struct device_class {
+    const char *old_stack;
+    const char *new_stack;
+};
+
+struct usb_controller {
+    _hs_list_head list;
+
+    uint8_t index;
+    io_string_t path;
 };
 
 extern const struct _hs_device_vtable _hs_posix_device_vtable;
 extern const struct _hs_device_vtable _hs_darwin_hid_vtable;
+
+static struct device_class device_classes[] = {
+    {"IOHIDDevice", "IOUSBHostHIDDevice"},
+    {"IOSerialBSDClient", "IOSerialBSDClient"},
+    {NULL}
+};
+
+static pthread_mutex_t controllers_lock = PTHREAD_MUTEX_INITIALIZER;
+static _HS_LIST(controllers);
+
+_HS_EXIT()
+{
+    _hs_list_foreach(cur, &controllers) {
+        struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
+        free(controller);
+    }
+    pthread_mutex_destroy(&controllers_lock);
+}
 
 static bool uses_new_stack()
 {
@@ -199,13 +227,6 @@ static int find_device_node(hs_device *dev, io_service_t service)
     return r;
 }
 
-struct usb_controller {
-    _hs_list_head list;
-
-    uint8_t index;
-    io_string_t path;
-};
-
 static int build_location_string(uint8_t ports[], unsigned int depth, char **rpath)
 {
     char buf[256];
@@ -237,23 +258,27 @@ static int build_location_string(uint8_t ports[], unsigned int depth, char **rpa
     return 0;
 }
 
-static uint8_t find_controller(_hs_list_head *controllers, io_service_t service)
+static uint8_t find_controller(io_service_t service)
 {
     io_string_t path;
     kern_return_t kret;
+    uint8_t index;
 
     kret = IORegistryEntryGetPath(service, correct_class(kIOServicePlane, kIOUSBPlane), path);
     if (kret != kIOReturnSuccess)
         return 0;
 
-    _hs_list_foreach(cur, controllers) {
+    index = 0;
+    _hs_list_foreach(cur, &controllers) {
         struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
 
-        if (strcmp(controller->path, path) == 0)
-            return controller->index;
+        if (strcmp(controller->path, path) == 0) {
+            index = controller->index;
+            break;
+        }
     }
 
-    return 0;
+    return index;
 }
 
 static io_service_t get_parent_and_release(io_service_t service, const io_name_t plane)
@@ -269,7 +294,7 @@ static io_service_t get_parent_and_release(io_service_t service, const io_name_t
     return parent;
 }
 
-static int resolve_device_location(io_service_t service, _hs_list_head *controllers, char **rlocation)
+static int resolve_device_location(io_service_t service, char **rlocation)
 {
     uint8_t ports[16];
     unsigned int depth = 0;
@@ -299,7 +324,7 @@ static int resolve_device_location(io_service_t service, _hs_list_head *controll
         goto cleanup;
     }
 
-    ports[depth] = find_controller(controllers, service);
+    ports[depth] = find_controller(service);
     if (!ports[depth]) {
         hs_log(HS_LOG_WARNING, "Cannot find matching USB Host controller, ignoring device");
         r = 0;
@@ -335,7 +360,7 @@ static io_service_t find_conforming_parent(io_service_t service, const char *cls
     return service;
 }
 
-static int process_darwin_device(hs_monitor *monitor, io_service_t service)
+static int process_darwin_device(io_service_t service, hs_device **rdev)
 {
     io_service_t dev_service = 0, iface_service = 0;
     hs_device *dev = NULL;
@@ -391,7 +416,7 @@ static int process_darwin_device(hs_monitor *monitor, io_service_t service)
 
 #undef GET_PROPERTY_STRING
 
-    r = resolve_device_location(dev_service, &monitor->controllers, &dev->location);
+    r = resolve_device_location(dev_service, &dev->location);
     if (r <= 0)
         goto cleanup;
 
@@ -399,7 +424,10 @@ static int process_darwin_device(hs_monitor *monitor, io_service_t service)
     if (r <= 0)
         goto cleanup;
 
-    r = _hs_monitor_add(monitor, dev);
+    *rdev = dev;
+    dev = NULL;
+    r = 1;
+
 cleanup:
     hs_device_unref(dev);
     if (dev_service)
@@ -409,34 +437,40 @@ cleanup:
     return r;
 }
 
-static int list_devices(hs_monitor *monitor)
+static int process_iterator_devices(io_iterator_t it, hs_monitor_callback_func *f, void *udata)
 {
     io_service_t service;
-    int r;
 
-    for (unsigned int i = 0; i < monitor->match_count; i++) {
-        while ((service = IOIteratorNext(monitor->attach_it[i]))) {
-            r = process_darwin_device(monitor, service);
-            IOObjectRelease(service);
-            if (r < 0)
-                return r;
-        }
+    while ((service = IOIteratorNext(it))) {
+        hs_device *dev;
+        int r;
+
+        r = process_darwin_device(service, &dev);
+        IOObjectRelease(service);
+        if (r < 0)
+            return r;
+        if (!r)
+            continue;
+
+        r = (*f)(dev, udata);
+        hs_device_unref(dev);
+        if (r)
+            return r;
     }
 
     return 0;
 }
 
-static void darwin_devices_attached(void *ptr, io_iterator_t devices)
+static int monitor_enumerate_callback(hs_device *dev, void *udata)
 {
-    // devices == h->attach_t
-    _HS_UNUSED(devices);
+    return _hs_monitor_add(udata, dev);
+}
 
+static void darwin_devices_attached(void *ptr, io_iterator_t it)
+{
     hs_monitor *monitor = ptr;
-    int r;
 
-    r = list_devices(monitor);
-    if (r < 0)
-        monitor->notify_ret = r;
+    monitor->notify_ret = process_iterator_devices(it, monitor_enumerate_callback, monitor);
 }
 
 static void remove_device(hs_monitor *monitor, io_service_t device_service)
@@ -453,63 +487,71 @@ static void remove_device(hs_monitor *monitor, io_service_t device_service)
     _hs_monitor_remove(monitor, key);
 }
 
-static void darwin_devices_detached(void *ptr, io_iterator_t devices)
+static void darwin_devices_detached(void *ptr, io_iterator_t it)
 {
     hs_monitor *monitor = ptr;
 
     io_service_t service;
-    while ((service = IOIteratorNext(devices))) {
+    while ((service = IOIteratorNext(it))) {
         remove_device(monitor, service);
         IOObjectRelease(service);
     }
 }
 
-static int add_controller(hs_monitor *monitor, uint8_t i, io_service_t service)
+static int add_controller(io_service_t service, uint8_t index)
 {
+    io_name_t path;
     struct usb_controller *controller;
     kern_return_t kret;
-    int r;
+
+    kret = IORegistryEntryGetPath(service, correct_class(kIOServicePlane, kIOUSBPlane), path);
+    if (kret != kIOReturnSuccess) {
+        hs_log(HS_LOG_WARNING, "IORegistryEntryGetPath() failed: %d", kret);
+        return 0;
+    }
 
     controller = calloc(1, sizeof(*controller));
-    if (!controller) {
-        r = hs_error(HS_ERROR_MEMORY, NULL);
-        goto error;
-    }
+    if (!controller)
+        return hs_error(HS_ERROR_MEMORY, NULL);
 
-    controller->index = i;
-    kret = IORegistryEntryGetPath(service, correct_class(kIOServicePlane, kIOUSBPlane), controller->path);
-    if (kret != kIOReturnSuccess) {
-        r = 0;
-        goto error;
-    }
+    controller->index = index;
+    strcpy(controller->path, path);
 
-    _hs_list_add(&monitor->controllers, &controller->list);
+    _hs_list_add(&controllers, &controller->list);
 
-    return 0;
-
-error:
-    free(controller);
-    return r;
+    return 1;
 }
 
-static int list_controllers(hs_monitor *monitor)
+static int populate_controllers(void)
 {
-    io_iterator_t controllers = 0;
+    io_iterator_t it = 0;
     io_service_t service;
     kern_return_t kret;
     int r;
 
+    pthread_mutex_lock(&controllers_lock);
+
+    if (!_hs_list_is_empty(&controllers)) {
+        r = 0;
+        goto cleanup;
+    }
+
     kret = IOServiceGetMatchingServices(kIOMasterPortDefault,
                                         IOServiceMatching(correct_class("AppleUSBHostController", "IOUSBRootHubDevice")),
-                                        &controllers);
+                                        &it);
     if (kret != kIOReturnSuccess) {
         r = hs_error(HS_ERROR_SYSTEM, "IOServiceGetMatchingServices() failed");
         goto cleanup;
     }
 
-    uint8_t i = 0;
-    while ((service = IOIteratorNext(controllers))) {
-        r = add_controller(monitor, ++i, service);
+    uint8_t index = 0;
+    while ((service = IOIteratorNext(it))) {
+        if (index == UINT8_MAX) {
+            hs_log(HS_LOG_WARNING, "Reached maximum controller ID %d, ignoring", UINT8_MAX);
+            break;
+        }
+
+        r = add_controller(service, ++index);
         IOObjectRelease(service);
         if (r < 0)
             goto cleanup;
@@ -517,22 +559,84 @@ static int list_controllers(hs_monitor *monitor)
 
     r = 0;
 cleanup:
-    if (controllers) {
-        clear_iterator(controllers);
-        IOObjectRelease(controllers);
+    pthread_mutex_unlock(&controllers_lock);
+    if (it) {
+        clear_iterator(it);
+        IOObjectRelease(it);
     }
     return r;
+}
+
+int hs_enumerate(hs_monitor_callback_func *f, void *udata)
+{
+    assert(f);
+
+    io_iterator_t it = 0;
+    kern_return_t kret;
+    int r;
+
+    r = populate_controllers();
+    if (r < 0)
+        goto cleanup;
+
+    for (unsigned int i = 0; device_classes[i].old_stack; i++) {
+        const char *cls = correct_class(device_classes[i].new_stack, device_classes[i].old_stack);
+
+        kret = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(cls), &it);
+        if (kret != kIOReturnSuccess) {
+            r = hs_error(HS_ERROR_SYSTEM, "IOServiceGetMatchingServices('%s') failed", cls);
+            goto cleanup;
+        }
+
+        r = process_iterator_devices(it, f, udata);
+        if (r)
+            goto cleanup;
+
+        IOObjectRelease(it);
+        it = 0;
+    }
+
+    r = 0;
+cleanup:
+    if (it) {
+        clear_iterator(it);
+        IOObjectRelease(it);
+    }
+    return r;
+}
+
+static int add_notification(hs_monitor *monitor, const char *cls, const io_name_t type,
+                            IOServiceMatchingCallback f, io_iterator_t *rit)
+{
+    io_iterator_t it;
+    kern_return_t kret;
+
+    kret = IOServiceAddMatchingNotification(monitor->notify_port, type, IOServiceMatching(cls),
+                                            f, monitor, &it);
+    if (kret != kIOReturnSuccess)
+        return hs_error(HS_ERROR_SYSTEM, "IOServiceAddMatchingNotification('%s') failed", cls);
+
+    assert(monitor->iterator_count < _HS_COUNTOF(monitor->iterators));
+    monitor->iterators[monitor->iterator_count++] = it;
+    *rit = it;
+
+    return 0;
 }
 
 int hs_monitor_new(hs_monitor **rmonitor)
 {
     assert(rmonitor);
 
-    hs_monitor *monitor;
+    hs_monitor *monitor = NULL;
     struct kevent kev;
     const struct timespec ts = {0};
+    io_iterator_t it;
     kern_return_t kret;
     int r;
+
+    r = populate_controllers();
+    if (r < 0)
+        goto error;
 
     monitor = calloc(1, sizeof(*monitor));
     if (!monitor) {
@@ -541,31 +645,11 @@ int hs_monitor_new(hs_monitor **rmonitor)
     }
     monitor->kqfd = -1;
 
-    _hs_list_init(&monitor->controllers);
-
     monitor->notify_port = IONotificationPortCreate(kIOMasterPortDefault);
     if (!monitor->notify_port) {
         r = hs_error(HS_ERROR_SYSTEM, "IONotificationPortCreate() failed");
         goto error;
     }
-
-#define ADD_NOTIFICATION(type, f, cls) \
-        kret = IOServiceAddMatchingNotification(monitor->notify_port, (type), \
-                                                IOServiceMatching(cls), \
-                                                (f), \
-                                                monitor, &monitor->attach_it[monitor->match_count++]); \
-        if (kret != kIOReturnSuccess) { \
-            r = hs_error(HS_ERROR_SYSTEM, "IOServiceAddMatchingNotification('%s') failed", (cls)); \
-            goto error; \
-        }
-
-    ADD_NOTIFICATION(kIOFirstMatchNotification, darwin_devices_attached,
-                     correct_class("IOUSBHostHIDDevice", "IOHIDDevice"));
-    ADD_NOTIFICATION(kIOFirstMatchNotification, darwin_devices_attached, "IOSerialBSDClient");
-    ADD_NOTIFICATION(kIOTerminatedNotification, darwin_devices_detached,
-                     correct_class("IOUSBHostDevice", kIOUSBDeviceClassName));
-
-#undef ADD_NOTIFICATION
 
     monitor->kqfd = kqueue();
     if (monitor->kqfd < 0) {
@@ -598,14 +682,22 @@ int hs_monitor_new(hs_monitor **rmonitor)
     if (r < 0)
         goto error;
 
-    r = list_controllers(monitor);
-    if (r < 0)
-        goto error;
+    for (unsigned int i = 0; device_classes[i].old_stack; i++) {
+        r = add_notification(monitor, correct_class(device_classes[i].new_stack, device_classes[i].old_stack),
+                             kIOFirstMatchNotification, darwin_devices_attached, &it);
+        if (r < 0)
+            goto error;
 
-    r = list_devices(monitor);
+        r = process_iterator_devices(it, monitor_enumerate_callback, monitor);
+        if (r < 0)
+            goto error;
+    }
+
+    r = add_notification(monitor, correct_class("IOUSBHostDevice", kIOUSBDeviceClassName),
+                         kIOTerminatedNotification, darwin_devices_detached, &it);
     if (r < 0)
         goto error;
-    clear_iterator(monitor->detach_it);
+    clear_iterator(it);
 
     *rmonitor = monitor;
     return 0;
@@ -620,23 +712,15 @@ void hs_monitor_free(hs_monitor *monitor)
     if (monitor) {
         _hs_monitor_release(monitor);
 
-        _hs_list_foreach(cur, &monitor->controllers) {
-            struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
-            free(controller);
-        }
-
         close(monitor->kqfd);
         if (monitor->port_set)
             mach_port_deallocate(mach_task_self(), monitor->port_set);
 
-        for (unsigned int i = 0; i < monitor->match_count; i++) {
-            clear_iterator(monitor->attach_it[i]);
-            IOObjectRelease(monitor->attach_it[i]);
+        for (unsigned int i = 0; i < monitor->iterator_count; i++) {
+            clear_iterator(monitor->iterators[i]);
+            IOObjectRelease(monitor->iterators[i]);
         }
-        if (monitor->detach_it) {
-            clear_iterator(monitor->detach_it);
-            IOObjectRelease(monitor->detach_it);
-        }
+
         if (monitor->notify_port)
             IONotificationPortDestroy(monitor->notify_port);
     }
@@ -685,7 +769,7 @@ int hs_monitor_refresh(hs_monitor *monitor)
 
         IODispatchCalloutFromMessage(NULL, &msg.header, monitor->notify_port);
 
-        if (monitor->notify_ret < 0) {
+        if (monitor->notify_ret) {
             r = monitor->notify_ret;
             monitor->notify_ret = 0;
 

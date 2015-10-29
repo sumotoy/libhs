@@ -59,10 +59,25 @@ typedef struct hs_monitor hs_monitor;
  * @return Return 0 to continue the enumeration/event processing, or any other value to abort.
  *     The enumeration/refresh function will then return this value unchanged.
  *
- * @sa hs_monitor_list() for enumeration.
- * @sa hs_monitor_refresh() for event processing.
+ * @sa hs_enumerate() for simple device enumeration.
+ * @sa hs_monitor_refresh() for hotplug support.
  */
 typedef int hs_monitor_callback_func(struct hs_device *dev, void *udata);
+
+/**
+ * @ingroup monitor
+ * @brief Enumerate current devices.
+ *
+ * If you need to support hotplugging you should probably use a monitor instead.
+ *
+ * See hs_monitor_callback_func() for more information about the callback.
+ *
+ * @param f     Function called for each enumerate device.
+ * @param udata Pointer to user-defined arbitrary data for the callback.
+ * @return This function returns 0 on success, or a negative @ref hs_error_code value. If the
+ *     callback returns a non-zero value, the enumeration is interrupted and the value is returned.
+ */
+HS_PUBLIC int hs_enumerate(hs_monitor_callback_func *f, void *udata);
 
 /**
  * @ingroup monitor

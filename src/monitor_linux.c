@@ -25,6 +25,7 @@
 #include "util.h"
 #include <fcntl.h>
 #include <libudev.h>
+#include <pthread.h>
 #include <unistd.h>
 #include "device_priv.h"
 #include "monitor_priv.h"
@@ -52,7 +53,14 @@ static const char *device_subsystems[] = {
     NULL
 };
 
+static pthread_mutex_t udev_lock = PTHREAD_MUTEX_INITIALIZER;
 static struct udev *udev;
+
+_HS_EXIT()
+{
+    udev_unref(udev);
+    pthread_mutex_destroy(&udev_lock);
+}
 
 static int compute_device_location(struct udev_device *dev, char **rlocation)
 {
@@ -194,16 +202,37 @@ cleanup:
     return r;
 }
 
-static int list_devices(hs_monitor *monitor)
+static int init_udev(void)
 {
-    assert(monitor);
+    if (udev)
+        return 0;
 
-    struct udev_enumerate *enumerate;
+    pthread_mutex_lock(&udev_lock);
+    if (!udev)
+        udev = udev_new();
+    pthread_mutex_unlock(&udev_lock);
+    if (!udev)
+        return hs_error(HS_ERROR_SYSTEM, "udev_new() failed");
+
+    return 0;
+}
+
+int hs_enumerate(hs_monitor_callback_func *f, void *udata)
+{
+    assert(f);
+
+    struct udev_enumerate *enumerate = NULL;
     int r;
 
+    r = init_udev();
+    if (r < 0)
+        goto cleanup;
+
     enumerate = udev_enumerate_new(udev);
-    if (!enumerate)
-        return hs_error(HS_ERROR_MEMORY, NULL);
+    if (!enumerate) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto cleanup;
+    }
 
     udev_enumerate_add_match_is_initialized(enumerate);
     for (const char **cur = device_subsystems; *cur; cur++) {
@@ -242,10 +271,9 @@ static int list_devices(hs_monitor *monitor)
         if (!r)
             continue;
 
-        r = _hs_monitor_add(monitor, dev);
+        r = (*f)(dev, udata);
         hs_device_unref(dev);
-
-        if (r < 0)
+        if (r)
             goto cleanup;
     }
 
@@ -255,27 +283,21 @@ cleanup:
     return r;
 }
 
-static void free_udev(void)
+static int monitor_enumerate_callback(hs_device *dev, void *udata)
 {
-    udev_unref(udev);
+    return _hs_monitor_add(udata, dev);
 }
 
 int hs_monitor_new(hs_monitor **rmonitor)
 {
     assert(rmonitor);
 
-    hs_monitor *monitor;
+    hs_monitor *monitor = NULL;
     int r;
 
-    if (!udev) {
-        // Quick inspection of libudev reveals it fails with malloc only
-        udev = udev_new();
-        if (!udev)
-            return hs_error(HS_ERROR_SYSTEM, "udev_new() failed");
-
-        // valgrind compliance ;)
-        atexit(free_udev);
-    }
+    r = init_udev();
+    if (r < 0)
+        goto error;
 
     monitor = calloc(1, sizeof(*monitor));
     if (!monitor) {
@@ -307,7 +329,7 @@ int hs_monitor_new(hs_monitor **rmonitor)
     if (r < 0)
         goto error;
 
-    r = list_devices(monitor);
+    r = hs_enumerate(monitor_enumerate_callback, monitor);
     if (r < 0)
         goto error;
 

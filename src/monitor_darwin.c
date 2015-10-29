@@ -55,7 +55,7 @@ struct hs_monitor {
 extern const struct _hs_device_vtable _hs_posix_device_vtable;
 extern const struct _hs_device_vtable _hs_darwin_hid_vtable;
 
-static bool uses_new_usb_stack()
+static bool uses_new_stack()
 {
     static bool init, new_stack;
 
@@ -65,6 +65,11 @@ static bool uses_new_usb_stack()
     }
 
     return new_stack;
+}
+
+static const char *correct_class(const char *new_stack, const char *old_stack)
+{
+    return uses_new_stack() ? new_stack : old_stack;
 }
 
 static int get_ioregistry_value_string(io_service_t service, CFStringRef prop, char **rs)
@@ -237,7 +242,7 @@ static uint8_t find_controller(_hs_list_head *controllers, io_service_t service)
     io_string_t path;
     kern_return_t kret;
 
-    kret = IORegistryEntryGetPath(service, uses_new_usb_stack() ? kIOServicePlane : kIOUSBPlane, path);
+    kret = IORegistryEntryGetPath(service, correct_class(kIOServicePlane, kIOUSBPlane), path);
     if (kret != kIOReturnSuccess)
         return 0;
 
@@ -273,7 +278,7 @@ static int resolve_device_location(io_service_t service, _hs_list_head *controll
     IOObjectRetain(service);
 
     do {
-        if (uses_new_usb_stack()) {
+        if (uses_new_stack()) {
             depth += !!get_ioregistry_value_data(service, CFSTR("port"), &ports[depth], sizeof(ports[depth]));
         } else {
             depth += get_ioregistry_value_number(service, CFSTR("PortNum"), kCFNumberSInt8Type, &ports[depth]);
@@ -285,8 +290,8 @@ static int resolve_device_location(io_service_t service, _hs_list_head *controll
             goto cleanup;
         }
 
-        service = get_parent_and_release(service, uses_new_usb_stack() ? kIOServicePlane : kIOUSBPlane);
-    } while (service && !IOObjectConformsTo(service, uses_new_usb_stack() ? "AppleUSBHostController" : "IOUSBRootHubDevice"));
+        service = get_parent_and_release(service, correct_class(kIOServicePlane, kIOUSBPlane));
+    } while (service && !IOObjectConformsTo(service, correct_class("AppleUSBHostController", "IOUSBRootHubDevice")));
 
     if (!depth) {
         hs_log(HS_LOG_WARNING, "Failed to build USB device location string, ignoring");
@@ -472,7 +477,7 @@ static int add_controller(hs_monitor *monitor, uint8_t i, io_service_t service)
     }
 
     controller->index = i;
-    kret = IORegistryEntryGetPath(service, uses_new_usb_stack() ? kIOServicePlane : kIOUSBPlane, controller->path);
+    kret = IORegistryEntryGetPath(service, correct_class(kIOServicePlane, kIOUSBPlane), controller->path);
     if (kret != kIOReturnSuccess) {
         r = 0;
         goto error;
@@ -495,7 +500,7 @@ static int list_controllers(hs_monitor *monitor)
     int r;
 
     kret = IOServiceGetMatchingServices(kIOMasterPortDefault,
-                                        IOServiceMatching(uses_new_usb_stack() ? "AppleUSBHostController" : "IOUSBRootHubDevice"),
+                                        IOServiceMatching(correct_class("AppleUSBHostController", "IOUSBRootHubDevice")),
                                         &controllers);
     if (kret != kIOReturnSuccess) {
         r = hs_error(HS_ERROR_SYSTEM, "IOServiceGetMatchingServices() failed");
@@ -555,10 +560,10 @@ int hs_monitor_new(hs_monitor **rmonitor)
         }
 
     ADD_NOTIFICATION(kIOFirstMatchNotification, darwin_devices_attached,
-                     uses_new_usb_stack() ? "IOUSBHostHIDDevice" : "IOHIDDevice");
+                     correct_class("IOUSBHostHIDDevice", "IOHIDDevice"));
     ADD_NOTIFICATION(kIOFirstMatchNotification, darwin_devices_attached, "IOSerialBSDClient");
     ADD_NOTIFICATION(kIOTerminatedNotification, darwin_devices_detached,
-                     uses_new_usb_stack() ? "IOUSBHostDevice" : kIOUSBDeviceClassName);
+                     correct_class("IOUSBHostDevice", kIOUSBDeviceClassName));
 
 #undef ADD_NOTIFICATION
 

@@ -26,6 +26,9 @@ check_symbol_exists(asprintf stdio.h HAVE_ASPRINTF)
 add_definitions(-DHAVE_CONFIG_H)
 configure_file(config.h.in config.h)
 
+find_package(Threads)
+list(APPEND HS_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+
 set(HS_SOURCES ../include/hs.h
                ../include/hs/common.h
                ../include/hs/device.h

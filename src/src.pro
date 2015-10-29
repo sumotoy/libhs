@@ -2,7 +2,7 @@ include(../libhs_common.pri)
 
 TEMPLATE = lib
 CONFIG -= qt
-CONFIG += dll
+CONFIG += dll thread
 
 TARGET = ../hs
 

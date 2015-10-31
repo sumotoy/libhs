@@ -74,6 +74,9 @@ typedef struct <a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga2d8636aaba5b624985aea704c28ef622"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__monitor.html#ga2d8636aaba5b624985aea704c28ef622">hs_enumerate</a> (<a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb">hs_monitor_callback_func</a> *f, void *udata)</td></tr>
+<tr class="memdesc:ga2d8636aaba5b624985aea704c28ef622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate current devices.  <a href="#ga2d8636aaba5b624985aea704c28ef622">More...</a><br /></td></tr>
+<tr class="separator:ga2d8636aaba5b624985aea704c28ef622"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga799b224f0743c1bb2d039cbf03e7a176"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__monitor.html#ga799b224f0743c1bb2d039cbf03e7a176">hs_monitor_new</a> (<a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e647a82c10">hs_monitor</a> **rmonitor)</td></tr>
 <tr class="memdesc:ga799b224f0743c1bb2d039cbf03e7a176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open a new device monitor.  <a href="#ga799b224f0743c1bb2d039cbf03e7a176">More...</a><br /></td></tr>
 <tr class="separator:ga799b224f0743c1bb2d039cbf03e7a176"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -92,9 +95,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3ee6c40990a2c5d41f0b235ccc943b9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f">hs_monitor_refresh</a> (<a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e647a82c10">hs_monitor</a> *monitor)</td></tr>
 <tr class="memdesc:ga3ee6c40990a2c5d41f0b235ccc943b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refresh the device list and fire device change events.  <a href="#ga3ee6c40990a2c5d41f0b235ccc943b9f">More...</a><br /></td></tr>
 <tr class="separator:ga3ee6c40990a2c5d41f0b235ccc943b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga90bf2a2b0a2d793e1ccb8975f2e9ade2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__monitor.html#ga90bf2a2b0a2d793e1ccb8975f2e9ade2">hs_monitor_enumerate</a> (<a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e647a82c10">hs_monitor</a> *monitor, <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb">hs_monitor_callback_func</a> *f, void *udata)</td></tr>
-<tr class="memdesc:ga90bf2a2b0a2d793e1ccb8975f2e9ade2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate the currently known devices.  <a href="#ga90bf2a2b0a2d793e1ccb8975f2e9ade2">More...</a><br /></td></tr>
-<tr class="separator:ga90bf2a2b0a2d793e1ccb8975f2e9ade2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga044af9c05f22c8035009795af66d6f02"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__monitor.html#ga044af9c05f22c8035009795af66d6f02">hs_monitor_list</a> (<a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e647a82c10">hs_monitor</a> *monitor, <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb">hs_monitor_callback_func</a> *f, void *udata)</td></tr>
+<tr class="memdesc:ga044af9c05f22c8035009795af66d6f02"><td class="mdescLeft">&#160;</td><td class="mdescRight">List the currently known devices.  <a href="#ga044af9c05f22c8035009795af66d6f02">More...</a><br /></td></tr>
+<tr class="separator:ga044af9c05f22c8035009795af66d6f02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Discover devices and react when devices are added and removed. </p>
@@ -120,13 +123,51 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Return 0 to continue the enumeration/event processing, or any other value to abort. The enumeration/refresh function will then return this value unchanged.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga90bf2a2b0a2d793e1ccb8975f2e9ade2" title="Enumerate the currently known devices. ">hs_monitor_enumerate()</a> for enumeration. </dd>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga2d8636aaba5b624985aea704c28ef622" title="Enumerate current devices. ">hs_enumerate()</a> for simple <a class="el" href="group__device.html" title="Access device information and open device handles. ">Device handling</a> enumeration. </dd>
 <dd>
-<a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> for event processing. </dd></dl>
+<a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> for hotplug support. </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga2d8636aaba5b624985aea704c28ef622"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int hs_enumerate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb">hs_monitor_callback_func</a> *&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>udata</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerate current devices. </p>
+<p>If you need to support hotplugging you should probably use a monitor instead.</p>
+<p>See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information about the callback.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Function called for each enumerate device. </td></tr>
+    <tr><td class="paramname">udata</td><td>Pointer to user-defined arbitrary data for the callback. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value. If the callback returns a non-zero value, the enumeration is interrupted and the value is returned. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ga799b224f0743c1bb2d039cbf03e7a176"></a>
 <div class="memitem">
 <div class="memproto">
@@ -329,12 +370,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga90bf2a2b0a2d793e1ccb8975f2e9ade2"></a>
+<a class="anchor" id="ga044af9c05f22c8035009795af66d6f02"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int hs_monitor_enumerate </td>
+          <td class="memname">int hs_monitor_list </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__monitor.html#ga88e3c086804a544301f9f5e647a82c10">hs_monitor</a> *&#160;</td>
           <td class="paramname"><em>monitor</em>, </td>
@@ -359,7 +400,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Enumerate the currently known devices. </p>
+<p>List the currently known devices. </p>
 <p>The device list is refreshed when the monitor is created, and when <a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> is called. This function simply uses the monitor's internal device list.</p>
 <p>See <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> for more information about the callback.</p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -370,7 +411,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value. If the callback returns a non-zero value, the enumeration is interrupted and the value is returned.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>This function returns 0 on success, or a negative <a class="el" href="group__misc.html#ga81664ccf8837633feb632ed05b9ea764">hs_error_code</a> value. If the callback returns a non-zero value, the listing is interrupted and the value is returned.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__monitor.html#ga3ee6c40990a2c5d41f0b235ccc943b9f" title="Refresh the device list and fire device change events. ">hs_monitor_refresh()</a> </dd>
 <dd>
 <a class="el" href="group__monitor.html#gac39c55360ac625318cbab20853b768eb" title="Device enumeration and event callback. ">hs_monitor_callback_func()</a> </dd></dl>
@@ -382,7 +423,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Oct 23 2015 15:17:59 for libhs by
+    <li class="footer">Generated on Sat Oct 31 2015 12:06:27 for libhs by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

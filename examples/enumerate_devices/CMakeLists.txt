@@ -20,5 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_subdirectory(enumerate_devices)
-add_subdirectory(monitor_devices)
+add_executable(enumerate_devices enumerate_devices.c)
+target_link_libraries(enumerate_devices hs_static)

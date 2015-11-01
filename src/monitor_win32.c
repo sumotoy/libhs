@@ -45,8 +45,6 @@
 struct hs_monitor {
     _HS_MONITOR
 
-    _hs_list_head controllers;
-
     CRITICAL_SECTION mutex;
     int ret;
     _hs_list_head notifications;
@@ -56,17 +54,11 @@ struct hs_monitor {
     HANDLE hwnd;
 };
 
-struct device_type {
-    char *prefix;
-    const GUID *guid;
-    hs_device_type type;
-};
-
 struct usb_controller {
     _hs_list_head list;
 
     uint8_t index;
-    char *roothub_id;
+    char roothub_id[];
 };
 
 enum device_event {
@@ -92,17 +84,24 @@ extern const struct _hs_device_vtable _hs_win32_device_vtable;
 #define MONITOR_CLASS_NAME "hs_monitor"
 
 static GUID hid_guid;
-static const struct device_type device_types[] = {
-    {"HID", &hid_guid, HS_DEVICE_TYPE_HID},
-    {NULL}
+static const GUID *device_classes[] = {
+    &GUID_DEVINTERFACE_USB_DEVICE,
+    &hid_guid,
+    NULL
 };
 
-static void free_controller(struct usb_controller *controller)
-{
-    if (controller)
-        free(controller->roothub_id);
+static CRITICAL_SECTION controllers_lock;
+static _HS_LIST(controllers);
 
-    free(controller);
+_HS_INIT()
+{
+    HidD_GetHidGuid(&hid_guid);
+    InitializeCriticalSection(&controllers_lock);
+}
+
+_HS_EXIT()
+{
+    DeleteCriticalSection(&controllers_lock);
 }
 
 static void free_notification(struct device_notification *notification)
@@ -113,9 +112,9 @@ static void free_notification(struct device_notification *notification)
     free(notification);
 }
 
-static uint8_t find_controller_index(_hs_list_head *controllers, const char *id)
+static uint8_t find_controller(const char *id)
 {
-    _hs_list_foreach(cur, controllers) {
+    _hs_list_foreach(cur, &controllers) {
         struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
 
         if (strcmp(controller->roothub_id, id) == 0)
@@ -367,7 +366,7 @@ cleanup:
     return r;
 }
 
-static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uint8_t ports[])
+static int resolve_device_location(DEVINST inst, uint8_t ports[])
 {
     DEVINST parent;
     char id[256];
@@ -434,7 +433,7 @@ static int resolve_device_location(DEVINST inst, _hs_list_head *controllers, uin
             if (!depth)
                 return 0;
 
-            ports[depth] = find_controller_index(controllers, id);
+            ports[depth] = find_controller(id);
             if (!ports[depth]) {
                 hs_log(HS_LOG_WARNING, "Unknown USB host controller '%s'", id);
                 return 0;
@@ -724,21 +723,220 @@ static int find_device_node(DEVINST inst, hs_device *dev)
             return r;
 
         dev->type = HS_DEVICE_TYPE_SERIAL;
-        return 1;
+    } else if (strncmp(dev->key, "HID\\", 4) == 0) {
+        r = build_device_path(dev->key, &hid_guid, &dev->path);
+        if (r < 0)
+            return r;
+
+        dev->type = HS_DEVICE_TYPE_HID;
+    } else {
+        hs_log(HS_LOG_DEBUG, "Unknown device type for '%s'", dev->key);
+        return 0;
     }
 
-    for (const struct device_type *type = device_types; type->prefix; type++) {
-        if (strncmp(type->prefix, dev->key, strlen(type->prefix)) == 0) {
-            r = build_device_path(dev->key, type->guid, &dev->path);
-            if (r < 0)
-                return r;
+    return 1;
+}
 
-            dev->type = type->type;
-            return 1;
+static int process_win32_device(DEVINST inst, const char *id, hs_device **rdev)
+{
+    hs_device *dev;
+    uint8_t ports[MAX_USB_DEPTH];
+    unsigned int depth;
+    int r;
+
+    dev = calloc(1, sizeof(*dev));
+    if (!dev) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto cleanup;
+    }
+    dev->refcount = 1;
+
+    if (id) {
+        dev->key = strdup(id);
+    } else {
+        char buf[256];
+        CONFIGRET cret;
+
+        cret = CM_Get_Device_ID(inst, buf, sizeof(buf), 0);
+        if (cret != CR_SUCCESS) {
+            hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
+            r = 0;
+            goto cleanup;
+        }
+
+        dev->key = strdup(buf);
+    }
+    if (!dev->key) {
+        r = hs_error(HS_ERROR_MEMORY, NULL);
+        goto cleanup;
+    }
+
+    // HID devices can have multiple collections for each interface, ignore them
+    if (strncmp(dev->key, "HID\\", 4) == 0) {
+        const char *ptr = strstr(dev->key, "&COL");
+        if (ptr && strncmp(ptr, "&COL01\\",  7) != 0) {
+            hs_log(HS_LOG_DEBUG, "Ignoring duplicate HID collection device '%s'", dev->key);
+            r = 0;
+            goto cleanup;
         }
     }
 
-    hs_log(HS_LOG_DEBUG, "Unknown device type for '%s'", dev->key);
+    hs_log(HS_LOG_DEBUG, "Examining device node '%s'", dev->key);
+
+    r = find_device_node(inst, dev);
+    if (r <= 0)
+        goto cleanup;
+
+    r = resolve_device_location(inst, ports);
+    if (r <= 0)
+        goto cleanup;
+    depth = (unsigned int)r;
+
+    r = read_device_properties(dev, inst, ports[depth - 1]);
+    if (r <= 0)
+        goto cleanup;
+
+    r = build_location_string(ports, depth, &dev->location);
+    if (r < 0)
+        goto cleanup;
+
+    dev->vtable = &_hs_win32_device_vtable;
+
+    *rdev = dev;
+    dev = NULL;
+    r = 1;
+
+cleanup:
+    hs_device_unref(dev);
+    return r;
+}
+
+static int add_controller(DEVINST inst, uint8_t index)
+{
+    DEVINST roothub_inst;
+    char roothub_id[512];
+    struct usb_controller *controller;
+    CONFIGRET cret;
+
+    cret = CM_Get_Child(&roothub_inst, inst, 0);
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "Found USB Host controller without a root hub");
+        return 0;
+    }
+
+    cret = CM_Get_Device_ID(roothub_inst, roothub_id, sizeof(roothub_id), 0);
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
+        return 0;
+    }
+    if (!strstr(roothub_id, "\\ROOT_HUB")) {
+        hs_log(HS_LOG_WARNING, "Unsupported root HUB at '%s'", roothub_id);
+        return 0;
+    }
+
+    controller = malloc(sizeof(*controller) + strlen(roothub_id) + 1);
+    if (!controller)
+        return hs_error(HS_ERROR_MEMORY, NULL);
+
+    controller->index = index;
+    strcpy(controller->roothub_id, roothub_id);
+
+    hs_log(HS_LOG_DEBUG, "Found USB root hub '%s' with ID %"PRIu8, controller->roothub_id,
+           controller->index);
+    _hs_list_add_tail(&controllers, &controller->list);
+
+    return 1;
+}
+
+static int populate_controllers(void)
+{
+    HDEVINFO set = NULL;
+    SP_DEVINFO_DATA info;
+    int r;
+
+    EnterCriticalSection(&controllers_lock);
+
+    if (!_hs_list_is_empty(&controllers)) {
+        r = 0;
+        goto cleanup;
+    }
+
+    set = SetupDiGetClassDevs(&GUID_DEVINTERFACE_USB_HOST_CONTROLLER, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+    if (!set) {
+        r = hs_error(HS_ERROR_SYSTEM, "SetupDiGetClassDevs() failed: %s", hs_win32_strerror(0));
+        goto cleanup;
+    }
+
+    info.cbSize = sizeof(info);
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(set, i, &info); i++) {
+        if (i + 1 == UINT8_MAX) {
+            hs_log(HS_LOG_WARNING, "Reached maximum controller ID %d, ignoring", UINT8_MAX);
+            break;
+        }
+
+        r = add_controller(info.DevInst, (uint8_t)(i + 1));
+        if (r < 0)
+            goto cleanup;
+    }
+
+    r = 0;
+cleanup:
+    LeaveCriticalSection(&controllers_lock);
+    if (set)
+        SetupDiDestroyDeviceInfoList(set);
+    return r;
+}
+
+static int enumerate_class(const GUID *guid, hs_monitor_callback_func *f, void *udata)
+{
+    HDEVINFO set = NULL;
+    SP_DEVINFO_DATA info;
+    hs_device *dev;
+    int r;
+
+    set = SetupDiGetClassDevs(guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+    if (!set) {
+        r = hs_error(HS_ERROR_SYSTEM, "SetupDiGetClassDevs() failed: %s", hs_win32_strerror(0));
+        goto cleanup;
+    }
+
+    info.cbSize = sizeof(info);
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(set, i, &info); i++) {
+        r = process_win32_device(info.DevInst, NULL, &dev);
+        if (r < 0)
+            goto cleanup;
+        if (!r)
+            continue;
+
+        r = (*f)(dev, udata);
+        hs_device_unref(dev);
+        if (r)
+            goto cleanup;
+    }
+
+    r = 0;
+cleanup:
+    if (set)
+        SetupDiDestroyDeviceInfoList(set);
+    return r;
+}
+
+int hs_enumerate(hs_monitor_callback_func *f, void *udata)
+{
+    assert(f);
+
+    int r;
+
+    r = populate_controllers();
+    if (r < 0)
+        return r;
+
+    for (unsigned int i = 0; device_classes[i]; i++) {
+        r = enumerate_class(device_classes[i], f, udata);
+        if (r)
+            return r;
+    }
+
     return 0;
 }
 
@@ -768,240 +966,6 @@ static int extract_device_id(const char *key, char **rid)
 
     *rid = id;
     return 0;
-}
-
-static int create_device(hs_monitor *monitor, const char *id, DEVINST inst, uint8_t ports[], unsigned int depth)
-{
-    hs_device *dev;
-    CONFIGRET cret;
-    int r;
-
-    dev = calloc(1, sizeof(*dev));
-    if (!dev) {
-        r = hs_error(HS_ERROR_MEMORY, NULL);
-        goto cleanup;
-    }
-    dev->refcount = 1;
-
-    r = extract_device_id(id, &dev->key);
-    if (r < 0)
-        return r;
-
-    // HID devices can have multiple collections for each interface, ignore them
-    if (strncmp(dev->key, "HID\\", 4) == 0) {
-        const char *ptr = strstr(dev->key, "&COL");
-        if (ptr && strncmp(ptr, "&COL01\\",  7) != 0) {
-            hs_log(HS_LOG_DEBUG, "Ignoring duplicate HID collection device '%s'", dev->key);
-            r = 0;
-            goto cleanup;
-        }
-    }
-
-    hs_log(HS_LOG_DEBUG, "Examining device '%s' with key '%s'", id, dev->key);
-    if (!inst) {
-        cret = CM_Locate_DevNode(&inst, dev->key, CM_LOCATE_DEVNODE_NORMAL);
-        if (cret != CR_SUCCESS) {
-            hs_log(HS_LOG_WARNING, "Device node '%s' does not exist: 0x%lx", dev->key, cret);
-            r = 0;
-            goto cleanup;
-        }
-    }
-
-    r = find_device_node(inst, dev);
-    if (r <= 0)
-        goto cleanup;
-
-    /* ports is used to make the USB location string, but you can pass NULL. create_device() is
-       called in two contexts:
-       - when listing USB devices, we've already got the ports used to find the device so we pass
-         it to this function
-       - when a device is added, we know nothing so create_device() has to walk up the device tree
-         to identify ports, see resolve_device_location() */
-    uint8_t ports2[MAX_USB_DEPTH];
-    if (!ports) {
-        ports = ports2;
-        r = resolve_device_location(inst, &monitor->controllers, ports);
-        if (r <= 0)
-            goto cleanup;
-        depth = (unsigned int)r;
-    }
-
-    r = read_device_properties(dev, inst, ports[depth - 1]);
-    if (r <= 0)
-        goto cleanup;
-
-    r = build_location_string(ports, depth, &dev->location);
-    if (r < 0)
-        goto cleanup;
-
-    dev->vtable = &_hs_win32_device_vtable;
-
-    r = _hs_monitor_add(monitor, dev);
-cleanup:
-    hs_device_unref(dev);
-    return r;
-}
-
-static int recurse_devices(hs_monitor *monitor, DEVINST inst, uint8_t ports[], unsigned int depth)
-{
-    char id[256];
-    DEVINST child;
-    CONFIGRET cret;
-    int r;
-
-    if (depth == MAX_USB_DEPTH) {
-        hs_log(HS_LOG_WARNING, "Excessive USB location depth, ignoring device");
-        return 0;
-    }
-
-    cret = CM_Get_Device_ID(inst, id, sizeof(id), 0);
-    if (cret != CR_SUCCESS) {
-        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
-        return 0;
-    }
-
-    cret = CM_Get_Child(&child, inst, 0);
-    if (cret != CR_SUCCESS && cret != CR_NO_SUCH_DEVNODE) {
-        hs_log(HS_LOG_WARNING, "Cannot enumerate children of device node '%s': 0x%lx", id, cret);
-        return 0;
-    }
-
-    // Consider leafs as actual devices, as a first approximation
-    if (cret == CR_NO_SUCH_DEVNODE) {
-        return create_device(monitor, id, inst, ports, depth);
-    } else {
-        hs_log(HS_LOG_DEBUG, "Browsing device tree for '%s' at depth %u", id, depth);
-        do {
-            // Test for Vista, CancelIoEx() is needed elsewhere so no need for VerifyVersionInfo()
-            if (hs_win32_version() >= HS_WIN32_VERSION_VISTA) {
-                r = find_device_port_vista(child);
-            } else {
-                char key[256];
-                DWORD len;
-
-                len = sizeof(key);
-                cret = CM_Get_DevNode_Registry_Property(child, CM_DRP_DRIVER, NULL, key, &len, 0);
-                if (cret != CR_SUCCESS) {
-                    hs_log(HS_LOG_WARNING, "Failed to get driver key for device node: 0x%lx", cret);
-                    return 0;
-                }
-
-                r = find_device_port_xp(id, key);
-            }
-            if (r < 0)
-                return r;
-
-            ports[depth] = (uint8_t)r;
-            r = recurse_devices(monitor, child, ports, depth + !!r);
-            if (r < 0)
-                return r;
-
-            cret = CM_Get_Sibling(&child, child, 0);
-        } while (cret == CR_SUCCESS);
-        if (cret != CR_NO_SUCH_DEVNODE)
-            hs_log(HS_LOG_WARNING, "Partial enumeration of device node '%s': 0x%lx", id, cret);
-
-        return 0;
-    }
-}
-
-static int browse_controller_tree(hs_monitor *monitor, DEVINST inst, DWORD index)
-{
-    struct usb_controller *controller;
-    DEVINST roothub_inst;
-    char buf[256];
-    uint8_t ports[MAX_USB_DEPTH];
-    CONFIGRET cret;
-    int r;
-
-    controller = calloc(1, sizeof(*controller));
-    if (!controller) {
-        r = hs_error(HS_ERROR_MEMORY, NULL);
-        goto error;
-    }
-
-    // should we worry about having more than 255 controllers?
-    controller->index = (uint8_t)(index + 1);
-
-    cret = CM_Get_Child(&roothub_inst, inst, 0);
-    if (cret != CR_SUCCESS) {
-        hs_log(HS_LOG_WARNING, "Found USB Host controller without a root hub");
-        r = 0;
-        goto error;
-    }
-
-    cret = CM_Get_Device_ID(roothub_inst, buf, sizeof(buf), 0);
-    if (cret != CR_SUCCESS) {
-        hs_log(HS_LOG_WARNING, "CM_Get_Device_ID() failed: 0x%lx", cret);
-        r = 0;
-        goto error;
-    }
-    if (!strstr(buf, "\\ROOT_HUB")) {
-        hs_log(HS_LOG_WARNING, "Unsupported root HUB at '%s'", buf);
-        r = 0;
-        goto error;
-    }
-    controller->roothub_id = strdup(buf);
-    if (!controller->roothub_id) {
-        r = hs_error(HS_ERROR_MEMORY, NULL);
-        goto error;
-    }
-
-    hs_log(HS_LOG_DEBUG, "Found USB root hub '%s' with ID %"PRIu8, controller->roothub_id,
-           controller->index);
-    ports[0] = controller->index;
-    r = recurse_devices(monitor, roothub_inst, ports, 1);
-    if (r < 0)
-        goto error;
-
-    _hs_list_add_tail(&monitor->controllers, &controller->list);
-
-    return 0;
-
-error:
-    free_controller(controller);
-    return r;
-}
-
-/* The principles here are simple, they're just hidden behind ugly Win32 APIs. Basically:
-   - list USB controllers and assign them a controller ID (1, 2, etc.), this will be the first
-     port number is the USB location string
-   - for each controller, browse the device tree recursively. The port number for each hub/device
-     comes from the device registry (Vista and later) or asking hubs about it (XP) */
-static int list_devices(hs_monitor *monitor)
-{
-    HDEVINFO set;
-    SP_DEVINFO_DATA dev;
-    int r;
-
-    if (!hid_guid.Data4[0])
-        HidD_GetHidGuid(&hid_guid);
-
-    _hs_list_foreach(cur, &monitor->controllers) {
-        struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
-
-        _hs_list_remove(&controller->list);
-        free(controller);
-    }
-
-    set = SetupDiGetClassDevs(&GUID_DEVINTERFACE_USB_HOST_CONTROLLER, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-    if (!set) {
-        r = hs_error(HS_ERROR_SYSTEM, "SetupDiGetClassDevs() failed: %s", hs_win32_strerror(0));
-        goto cleanup;
-    }
-
-    dev.cbSize = sizeof(dev);
-    for (DWORD i = 0; SetupDiEnumDeviceInfo(set, i, &dev); i++) {
-        r = browse_controller_tree(monitor, dev.DevInst, i);
-        if (r < 0)
-            goto cleanup;
-    }
-
-    r = 0;
-cleanup:
-    if (set)
-        SetupDiDestroyDeviceInfoList(set);
-    return r;
 }
 
 static int post_device_event(hs_monitor *monitor, enum device_event event, DEV_BROADCAST_DEVICEINTERFACE *data)
@@ -1154,6 +1118,11 @@ static int wait_event(HANDLE event)
     return 0;
 }
 
+static int monitor_enumerate_callback(hs_device *dev, void *udata)
+{
+    return _hs_monitor_add(udata, dev);
+}
+
 /* Monitoring device changes on Windows involves a window to receive device notifications on the
    thread message queue. Unfortunately we can't poll on message queues so instead, we make a
    background thread to get device notifications, and tell us about it using Win32 events which
@@ -1171,8 +1140,6 @@ int hs_monitor_new(hs_monitor **rmonitor)
         goto error;
     }
 
-    _hs_list_init(&monitor->controllers);
-
     _hs_list_init(&monitor->notifications);
     InitializeCriticalSection(&monitor->mutex);
     monitor->event = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -1185,7 +1152,7 @@ int hs_monitor_new(hs_monitor **rmonitor)
     if (r < 0)
         goto error;
 
-    r = list_devices(monitor);
+    r = hs_enumerate(monitor_enumerate_callback, monitor);
     if (r < 0)
         goto error;
 
@@ -1226,11 +1193,6 @@ void hs_monitor_free(hs_monitor *monitor)
             CloseHandle(monitor->thread);
         }
 
-        _hs_list_foreach(cur, &monitor->controllers) {
-            struct usb_controller *controller = _hs_container_of(cur, struct usb_controller, list);
-            free_controller(controller);
-        }
-
         DeleteCriticalSection(&monitor->mutex);
         if (monitor->event)
             CloseHandle(monitor->event);
@@ -1248,6 +1210,29 @@ hs_descriptor hs_monitor_get_descriptor(const hs_monitor *monitor)
 {
     assert(monitor);
     return monitor->event;
+}
+
+static int process_arrival_notification(hs_monitor *monitor, const char *key)
+{
+    DEVINST inst;
+    hs_device *dev = NULL;
+    CONFIGRET cret;
+    int r;
+
+    cret = CM_Locate_DevNode(&inst, (DEVINSTID)key, CM_LOCATE_DEVNODE_NORMAL);
+    if (cret != CR_SUCCESS) {
+        hs_log(HS_LOG_WARNING, "Device node '%s' does not exist: 0x%lx", dev->key, cret);
+        return 0;
+    }
+
+    r = process_win32_device(inst, key, &dev);
+    if (r <= 0)
+        return r;
+
+    r = _hs_monitor_add(monitor, dev);
+    hs_device_unref(dev);
+
+    return r;
 }
 
 int hs_monitor_refresh(hs_monitor *monitor)
@@ -1277,7 +1262,7 @@ int hs_monitor_refresh(hs_monitor *monitor)
         switch (notification->event) {
         case DEVICE_EVENT_ADDED:
             hs_log(HS_LOG_DEBUG, "Received arrival notification for device '%s'", notification->key);
-            r = create_device(monitor, notification->key, 0, NULL, 0);
+            r = process_arrival_notification(monitor, notification->key);
             break;
 
         case DEVICE_EVENT_REMOVED:
